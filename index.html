@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduAgnz – Plataforma Educativa</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+</head>
+<body>
+
+<!-- ============================================================
+     AUTH SECTION
+     ============================================================ -->
+<div id="auth-section" hidden>
+
+  <!-- LOGIN -->
+  <div class="auth-card auth-view" id="auth-login">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🎓</div>
+      <div class="auth-logo-text">Edu<span>Agnz</span></div>
+    </div>
+    <div class="auth-title">Iniciar sesión</div>
+    <div class="auth-subtitle">Accede a tu plataforma educativa</div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label for="login-email">Correo electrónico</label>
+        <input id="login-email" class="form-control" type="email" name="email"
+               placeholder="tu@email.com" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Contraseña</label>
+        <input id="login-password" class="form-control" type="password" name="password"
+               placeholder="••••••••" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.4rem">
+        Iniciar sesión
+      </button>
+    </form>
+
+    <div class="auth-switch">
+      ¿No tienes cuenta? <a href="#" onclick="showAuthView('register'); return false">Regístrate</a>
+    </div>
+
+    <div class="auth-demo">
+      <strong>Cuentas de demostración:</strong><br />
+      📖 Profesor: <code>profesor@eduagnz.com</code> / <code>profesor123</code><br />
+      🎓 Estudiante: <code>estudiante@eduagnz.com</code> / <code>estudiante123</code>
+    </div>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="auth-card auth-view" id="auth-register" hidden>
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🎓</div>
+      <div class="auth-logo-text">Edu<span>Agnz</span></div>
+    </div>
+    <div class="auth-title">Crear cuenta</div>
+    <div class="auth-subtitle">Únete a la plataforma educativa</div>
+
+    <form id="register-form">
+      <div class="form-group">
+        <label>Soy…</label>
+        <div class="role-selector no-select">
+          <div class="role-option active" data-role="student" onclick="selectRole('student')">
+            <span class="role-icon">🎓</span>
+            <span class="role-label">Estudiante</span>
+          </div>
+          <div class="role-option" data-role="teacher" onclick="selectRole('teacher')">
+            <span class="role-icon">👩‍🏫</span>
+            <span class="role-label">Profesor/a</span>
+          </div>
+        </div>
+        <input type="hidden" name="role" value="student" />
+      </div>
+      <div class="form-group">
+        <label for="reg-name">Nombre completo</label>
+        <input id="reg-name" class="form-control" type="text" name="name"
+               placeholder="Tu nombre completo" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-email">Correo electrónico</label>
+        <input id="reg-email" class="form-control" type="email" name="email"
+               placeholder="tu@email.com" required autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="reg-password">Contraseña</label>
+        <input id="reg-password" class="form-control" type="password" name="password"
+               placeholder="Mínimo 6 caracteres" required autocomplete="new-password" minlength="6" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.4rem">
+        Crear cuenta
+      </button>
+    </form>
+
+    <div class="auth-switch">
+      ¿Ya tienes cuenta? <a href="#" onclick="showAuthView('login'); return false">Inicia sesión</a>
+    </div>
+  </div>
+
+</div><!-- /#auth-section -->
+
+
+<!-- ============================================================
+     APP SECTION
+     ============================================================ -->
+<div id="app-section" hidden>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🎓</div>
+      <div class="sidebar-logo-text">Edu<span>Agnz</span></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebar-avatar">U</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sidebar-user-name">Usuario</div>
+        <div class="sidebar-user-role" id="sidebar-user-role">Rol</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebar-nav"></nav>
+    <div class="sidebar-footer">
+      <button id="btn-logout" class="btn btn-secondary btn-block btn-sm">
+        🚪 Cerrar sesión
+      </button>
+    </div>
+  </aside>
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+  <!-- MAIN CONTENT -->
+  <div id="main-content">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div>
+        <button class="hamburger" id="hamburger" aria-label="Menú">☰</button>
+        <div id="topbar-title" class="topbar-title">Inicio</div>
+        <div id="topbar-subtitle" class="topbar-subtitle" style="display:none"></div>
+      </div>
+      <div class="topbar-actions" id="topbar-actions"></div>
+    </header>
+
+    <!-- CONTENT AREA -->
+    <main class="content-area">
+
+      <!-- ============================================================
+           TEACHER VIEWS
+           ============================================================ -->
+
+      <!-- TEACHER OVERVIEW -->
+      <div class="view" id="view-teacher-overview">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">📚</div>
+            <div class="stat-info">
+              <div class="stat-value" id="teacher-stat-courses">0</div>
+              <div class="stat-label">Cursos</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">📋</div>
+            <div class="stat-info">
+              <div class="stat-value" id="teacher-stat-asgns">0</div>
+              <div class="stat-label">Tareas</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">📥</div>
+            <div class="stat-info">
+              <div class="stat-value" id="teacher-stat-subs">0</div>
+              <div class="stat-label">Entregas</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon red">⏳</div>
+            <div class="stat-info">
+              <div class="stat-value" id="teacher-stat-ungraded">0</div>
+              <div class="stat-label">Sin calificar</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-header">
+          <div class="section-title">Tareas Recientes</div>
+          <button class="btn btn-primary btn-sm" onclick="Nav.go('teacher-courses')">Ver Cursos</button>
+        </div>
+        <div id="teacher-recent-asgns"></div>
+      </div>
+
+      <!-- TEACHER COURSES -->
+      <div class="view" id="view-teacher-courses">
+        <div class="section-header">
+          <div class="section-title">Mis Cursos</div>
+          <button class="btn btn-primary btn-sm" onclick="openCourseModal()">+ Nuevo Curso</button>
+        </div>
+        <div class="cards-grid" id="teacher-courses-grid"></div>
+      </div>
+
+      <!-- TEACHER COURSE DETAIL -->
+      <div class="view" id="view-teacher-course-detail">
+        <div id="teacher-course-detail-breadcrumb" class="breadcrumb"></div>
+        <div id="teacher-course-detail-header"></div>
+
+        <!-- Enrollment Code -->
+        <div class="detail-card" style="margin-bottom:1.4rem">
+          <div class="section-title" style="margin-bottom:.8rem">🔑 Código de Inscripción</div>
+          <div id="teacher-enroll-code"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab active" onclick="switchCourseTab('assignments', this)">📋 Tareas</button>
+          <button class="tab" onclick="switchCourseTab('students', this)">👨‍🎓 Estudiantes</button>
+        </div>
+
+        <!-- Assignments tab -->
+        <div id="course-tab-assignments">
+          <div class="section-header">
+            <div class="section-title">Tareas del Curso</div>
+            <button class="btn btn-primary btn-sm" id="btn-new-asgn-course"
+              onclick="openAssignmentModal(null, currentCourseId())">+ Nueva Tarea</button>
+          </div>
+          <div id="teacher-course-assignments-list"></div>
+        </div>
+
+        <!-- Students tab -->
+        <div id="course-tab-students" hidden>
+          <div class="section-header">
+            <div class="section-title">Estudiantes Inscritos</div>
+          </div>
+          <div id="teacher-course-students-list"></div>
+        </div>
+      </div>
+
+      <!-- TEACHER ALL ASSIGNMENTS -->
+      <div class="view" id="view-teacher-assignments">
+        <div class="section-header">
+          <div class="section-title">Todas las Tareas</div>
+        </div>
+        <div id="teacher-assignments-list"></div>
+      </div>
+
+      <!-- TEACHER ASSIGNMENT DETAIL -->
+      <div class="view" id="view-teacher-assignment-detail">
+        <div id="teacher-asgn-breadcrumb" class="breadcrumb"></div>
+        <div id="teacher-asgn-info"></div>
+        <div class="section-header" style="margin-top:1rem">
+          <div class="section-title">📥 Entregas de Estudiantes</div>
+        </div>
+        <div id="teacher-asgn-submissions"></div>
+      </div>
+
+      <!-- TEACHER ALL SUBMISSIONS -->
+      <div class="view" id="view-teacher-submissions">
+        <div class="section-header">
+          <div class="section-title">Todas las Entregas</div>
+        </div>
+        <div id="teacher-all-submissions"></div>
+      </div>
+
+
+      <!-- ============================================================
+           STUDENT VIEWS
+           ============================================================ -->
+
+      <!-- STUDENT OVERVIEW -->
+      <div class="view" id="view-student-overview">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon blue">📚</div>
+            <div class="stat-info">
+              <div class="stat-value" id="student-stat-courses">0</div>
+              <div class="stat-label">Cursos</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon amber">⏳</div>
+            <div class="stat-info">
+              <div class="stat-value" id="student-stat-pending">0</div>
+              <div class="stat-label">Pendientes</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon green">📤</div>
+            <div class="stat-info">
+              <div class="stat-value" id="student-stat-subs">0</div>
+              <div class="stat-label">Entregas</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">🏆</div>
+            <div class="stat-info">
+              <div class="stat-value" id="student-stat-graded">0</div>
+              <div class="stat-label">Calificadas</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-header">
+          <div class="section-title">Próximas Tareas</div>
+          <button class="btn btn-primary btn-sm" onclick="Nav.go('student-assignments')">Ver todas</button>
+        </div>
+        <div id="student-upcoming-asgns"></div>
+      </div>
+
+      <!-- STUDENT COURSES -->
+      <div class="view" id="view-student-courses">
+        <div class="section-header">
+          <div class="section-title">Mis Cursos</div>
+          <button class="btn btn-primary btn-sm" onclick="openJoinModal()">🔑 Unirse a Curso</button>
+        </div>
+        <div class="cards-grid" id="student-courses-grid"></div>
+      </div>
+
+      <!-- STUDENT COURSE DETAIL -->
+      <div class="view" id="view-student-course-detail">
+        <div id="student-course-breadcrumb" class="breadcrumb"></div>
+        <div id="student-course-header"></div>
+        <div class="section-title" style="margin-bottom:.8rem">📋 Tareas</div>
+        <div id="student-course-asgns"></div>
+      </div>
+
+      <!-- STUDENT ALL ASSIGNMENTS -->
+      <div class="view" id="view-student-assignments">
+        <div class="section-header">
+          <div class="section-title">Mis Tareas</div>
+        </div>
+        <div id="student-assignments-list"></div>
+      </div>
+
+      <!-- STUDENT ASSIGNMENT DETAIL -->
+      <div class="view" id="view-student-assignment-detail">
+        <div id="student-asgn-breadcrumb" class="breadcrumb"></div>
+        <div id="student-asgn-info"></div>
+        <div id="student-submission-section"></div>
+      </div>
+
+      <!-- STUDENT MY SUBMISSIONS -->
+      <div class="view" id="view-student-my-submissions">
+        <div class="section-header">
+          <div class="section-title">Mis Entregas</div>
+        </div>
+        <div id="student-my-subs-list"></div>
+      </div>
+
+    </main><!-- /.content-area -->
+  </div><!-- /#main-content -->
+</div><!-- /#app-section -->
+
+
+<!-- ============================================================
+     MODALS
+     ============================================================ -->
+<div id="modal-overlay">
+
+  <!-- COURSE MODAL -->
+  <div class="modal" id="modal-course">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-course-title">Nuevo Curso</div>
+      <button class="modal-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="modal-course-form" onsubmit="saveCourse(event)">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Nombre del curso *</label>
+          <input class="form-control" name="name" placeholder="Ej: Matemáticas II" required />
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea class="form-control" name="description" placeholder="Descripción del curso…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ASSIGNMENT MODAL -->
+  <div class="modal" id="modal-assignment">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-asgn-title">Nueva Tarea</div>
+      <button class="modal-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="modal-asgn-form" onsubmit="saveAssignment(event)">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Curso *</label>
+          <select class="form-control" name="courseId" required></select>
+        </div>
+        <div class="form-group">
+          <label>Título de la tarea *</label>
+          <input class="form-control" name="title" placeholder="Ej: Taller de Derivadas" required />
+        </div>
+        <div class="form-group">
+          <label>Descripción / Instrucciones</label>
+          <textarea class="form-control" name="description" rows="4"
+            placeholder="Describe las instrucciones de la tarea…"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha límite *</label>
+            <input class="form-control" type="date" name="dueDate" required />
+          </div>
+          <div class="form-group">
+            <label>Puntos *</label>
+            <input class="form-control" type="number" name="points" min="1" max="1000"
+                   placeholder="100" required />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Tarea</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- GRADE MODAL -->
+  <div class="modal" id="modal-grade">
+    <div class="modal-header">
+      <div class="modal-title">📊 Calificar Entrega</div>
+      <button class="modal-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="modal-grade-form" onsubmit="saveGrade(event)">
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Calificación * <small>(máx. <span id="grade-max">100</span> pts)</small></label>
+          <input class="form-control" type="number" name="grade" min="0" placeholder="0" required />
+        </div>
+        <div class="form-group">
+          <label>Retroalimentación</label>
+          <textarea class="form-control" name="feedback" rows="3"
+            placeholder="Comentarios para el estudiante…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Guardar Calificación</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- SUBMIT MODAL -->
+  <div class="modal" id="modal-submit">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-submit-title">📤 Entregar Tarea</div>
+      <button class="modal-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="modal-submit-form" onsubmit="saveSubmit(event)">
+      <div class="modal-body">
+        <div class="alert alert-info" style="margin-bottom:1rem">
+          ℹ️ Escribe tu respuesta en el campo de texto. Puedes indicar el nombre del archivo que entregarías.
+        </div>
+        <div class="form-group">
+          <label>Respuesta / Desarrollo *</label>
+          <textarea class="form-control" name="content" rows="6"
+            placeholder="Escribe tu respuesta, procedimiento o comentarios aquí…" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Nombre del archivo adjunto <small>(opcional)</small></label>
+          <input class="form-control" name="fileName" placeholder="Ej: tarea_derivadas.pdf" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
+        <button type="submit" class="btn btn-primary">📤 Enviar Entrega</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- JOIN COURSE MODAL -->
+  <div class="modal" id="modal-join">
+    <div class="modal-header">
+      <div class="modal-title">🔑 Unirse a un Curso</div>
+      <button class="modal-close" aria-label="Cerrar">✕</button>
+    </div>
+    <form id="modal-join-form" onsubmit="saveJoin(event)">
+      <div class="modal-body">
+        <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1.2rem">
+          Ingresa el código de inscripción que te proporcionó tu profesor.
+        </p>
+        <div class="form-group">
+          <label>Código del curso *</label>
+          <input class="form-control" name="code" placeholder="Ej: MAT201"
+                 style="text-transform:uppercase;font-size:1.1rem;letter-spacing:.1em;font-weight:700"
+                 required autocomplete="off" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Unirse</button>
+      </div>
+    </form>
+  </div>
+
+</div><!-- /#modal-overlay -->
+
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+
+<!-- SCRIPTS -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+  /* ── Course detail tab switcher ── */
+  function switchCourseTab(tab, btn) {
+    document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const aDiv = document.getElementById('course-tab-assignments');
+    const sDiv = document.getElementById('course-tab-students');
+    if (tab === 'assignments') {
+      aDiv.hidden = false;
+      sDiv.hidden = true;
+    } else {
+      aDiv.hidden = true;
+      sDiv.hidden = false;
+    }
+  }
+
+  /* ── Helper to get current course ID from breadcrumb ── */
+  function currentCourseId() {
+    const bc = document.querySelector('#teacher-course-detail-breadcrumb .breadcrumb-item[onclick]');
+    if (!bc) return null;
+    const match = bc.getAttribute('onclick')?.match(/'([^']+)'\s*\}/);
+    // We store _currentCourseDetailId in the renderer
+    return window._currentCourseDetailId || null;
+  }
+
+  /* Patch ViewRenderers to save course id */
+  const _origCourseDetail = ViewRenderers['teacher-course-detail'];
+  ViewRenderers['teacher-course-detail'] = function(data) {
+    window._currentCourseDetailId = data.id;
+    _origCourseDetail(data);
+  };
+</script>
+</body>
+</html>
