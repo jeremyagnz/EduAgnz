@@ -487,7 +487,11 @@ ViewRenderers['teacher-assignment-detail'] = function({ id }) {
         </div>
         <div class="detail-meta-item">
           <span class="detail-meta-label">Estado</span>
-          <span class="detail-meta-value">${isOverdue(asgn.dueDate) ? '🔴 Vencida' : '🟢 Activa'}</span>
+          <span class="detail-meta-value">
+            ${isOverdue(asgn.dueDate)
+              ? `<span class="badge badge-red" aria-label="Estado: Vencida">${icon('alert',12)} Vencida</span>`
+              : `<span class="badge badge-green" aria-label="Estado: Activa">${icon('check',12)} Activa</span>`}
+          </span>
         </div>
         <div class="detail-meta-item">
           <span class="detail-meta-label">Creada</span>
@@ -1320,7 +1324,7 @@ function handleRegister(e) {
 
   if (!name)  { toast('El nombre es requerido', 'error'); return; }
   if (!email) { toast('El correo es requerido', 'error'); return; }
-  if (!pass || pass.length < 6) { toast('La contraseña debe tener al menos 6 caracteres', 'error'); return; }
+  if (!pass || pass.length < 8) { toast('La contraseña debe tener al menos 8 caracteres', 'error'); return; }
 
   const user = DB.users.create({ name, email, password: pass, role });
   if (!user) { toast('Ya existe una cuenta con ese correo', 'error'); return; }

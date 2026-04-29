@@ -661,7 +661,8 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 .view-ph {
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 1.75rem 2rem 1.5rem;
+  border-top: 3px solid var(--ph-accent, var(--primary));
+  padding: 1.5rem 2rem 1.25rem;
 }
 
 .view-ph .ph-top {
@@ -707,15 +708,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 .ph-breadcrumb .bc-item:hover { color: var(--primary); }
 .ph-breadcrumb .bc-sep { color: var(--text-light); line-height: 1; }
 .ph-breadcrumb .bc-item.current { color: var(--text); font-weight: 600; cursor: default; }
-
-/* Accent bar at top of page header */
-.view-ph::before {
-  content: '';
-  display: block;
-  height: 3px;
-  margin: -1.75rem -2rem 1.5rem;
-  background: var(--ph-accent, var(--primary));
-}
 
 /* Per-view accent colors */
 .ph-indigo  { --ph-accent: #4F46E5; }
@@ -1461,7 +1453,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 
   .view-body { padding: 1.25rem; }
   .view-ph   { padding: 1.25rem 1.25rem 1rem; }
-  .view-ph::before { margin: -1.25rem -1.25rem 1rem; }
 }
 
 @media (max-width: 600px) {
