@@ -50,6 +50,9 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Ensure [hidden] always wins over explicit display rules */
+[hidden] { display: none !important; }
+
 html { font-size: 15px; -webkit-font-smoothing: antialiased; }
 
 body {
@@ -274,7 +277,6 @@ svg.icon { display: inline-block; flex-shrink: 0; }
 
 /* Auth view switching */
 .auth-view { display: block; }
-.auth-view[hidden] { display: none; }
 
 /* ─── Form elements ─── */
 .form-group { margin-bottom: 1.1rem; }
