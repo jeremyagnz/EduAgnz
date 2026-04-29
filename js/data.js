@@ -186,19 +186,21 @@ const DB = (() => {
       if (i >= 0) arr[i] = sub; else arr.push(sub);
       store('submissions', arr);
     },
-    submit({ assignmentId, studentId, content, fileName }) {
+    submit({ assignmentId, studentId, content, fileName, fileData, fileSize }) {
       const existing = submissions.get(assignmentId, studentId);
       if (existing) {
         // resubmit
         existing.content   = content;
         existing.fileName  = fileName || null;
+        existing.fileData  = fileData  || null;
+        existing.fileSize  = fileSize  || null;
         existing.submittedAt = new Date().toISOString();
         existing.grade     = null;
         existing.feedback  = null;
         submissions.save(existing);
         return existing;
       }
-      const sub = { id: genId(), assignmentId, studentId, content, fileName: fileName || null, submittedAt: new Date().toISOString(), grade: null, feedback: null };
+      const sub = { id: genId(), assignmentId, studentId, content, fileName: fileName || null, fileData: fileData || null, fileSize: fileSize || null, submittedAt: new Date().toISOString(), grade: null, feedback: null };
       const arr = submissions.all();
       arr.push(sub);
       store('submissions', arr);

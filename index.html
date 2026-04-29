@@ -714,7 +714,7 @@
     <form id="modal-submit-form" onsubmit="saveSubmit(event)">
       <div class="modal-body">
         <div class="alert alert-info" style="margin-bottom:1rem">
-          Escribe tu respuesta a continuación. Puedes indicar el nombre del archivo que entregarías.
+          Escribe tu respuesta a continuación. Puedes adjuntar un archivo de soporte.
         </div>
         <div class="form-group">
           <label>Respuesta / Desarrollo *</label>
@@ -722,8 +722,17 @@
             placeholder="Escribe tu respuesta, procedimiento o comentarios aquí…" required></textarea>
         </div>
         <div class="form-group">
-          <label>Nombre del archivo adjunto <small style="font-weight:400;color:var(--text-muted)">(opcional)</small></label>
-          <input class="form-control" name="fileName" placeholder="Ej: tarea_derivadas.pdf" />
+          <label>Archivo adjunto <small style="font-weight:400;color:var(--text-muted)">(opcional · máx. 5 MB)</small></label>
+          <label class="file-drop" id="file-drop-label" for="submit-file-input">
+            <input type="file" id="submit-file-input" name="fileAttachment"
+              accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif,.zip,.rar">
+            <span id="file-drop-icon"></span>
+            <span id="file-drop-text">Haz clic para seleccionar un archivo</span>
+          </label>
+          <div class="file-selected-info" id="file-selected-info" hidden>
+            <span id="file-selected-name"></span>
+            <button type="button" id="file-remove-btn" aria-label="Quitar archivo">✕</button>
+          </div>
         </div>
       </div>
       <div class="modal-footer">

@@ -84,6 +84,22 @@ function initials(name) {
   return name.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
 }
 
+function formatFileSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function fileAttachmentHtml(sub) {
+  if (!sub?.fileName) return '';
+  const label = escHtml(sub.fileName) + (sub.fileSize ? ` <span style="opacity:.65">(${formatFileSize(sub.fileSize)})</span>` : '');
+  if (sub.fileData) {
+    return `<a class="file-attachment" href="${sub.fileData}" download="${escHtml(sub.fileName)}" title="Descargar ${escHtml(sub.fileName)}">${icon('paperclip',12)} ${label}</a>`;
+  }
+  return `<div class="file-attachment">${icon('paperclip',12)} ${label}</div>`;
+}
+
 function escHtml(str) {
   return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -554,7 +570,7 @@ ViewRenderers['teacher-assignment-detail'] = function({ id }) {
           </div>
         </div>
         <div class="submission-content">${escHtml(sub.content)}</div>
-        ${sub.fileName ? `<div class="file-attachment">${icon('clipboard',12)} ${escHtml(sub.fileName)}</div>` : ''}
+        ${fileAttachmentHtml(sub)}
         ${sub.feedback ? `<div class="feedback-block"><div class="feedback-label">Retroalimentación</div>${escHtml(sub.feedback)}</div>` : ''}
       </div>`;
   }).join('');
@@ -858,7 +874,7 @@ ViewRenderers['student-assignment-detail'] = function({ id }) {
           </div>
         </div>
         <div class="submission-content">${escHtml(sub.content)}</div>
-        ${sub.fileName ? `<div class="file-attachment">${icon('clipboard',12)} ${escHtml(sub.fileName)}</div>` : ''}
+        ${fileAttachmentHtml(sub)}
         ${gradeHtml}
       </div>`;
   } else if (!isOverdue(asgn.dueDate)) {
@@ -918,7 +934,7 @@ ViewRenderers['student-my-submissions'] = function() {
           </div>
         </div>
         <div class="submission-content">${escHtml(sub.content)}</div>
-        ${sub.fileName ? `<div class="file-attachment">${icon('clipboard',12)} ${escHtml(sub.fileName)}</div>` : ''}
+        ${fileAttachmentHtml(sub)}
         ${sub.feedback ? `<div class="feedback-block"><div class="feedback-label">Retroalimentación</div>${escHtml(sub.feedback)}</div>` : ''}
       </div>`;
   }).join('');
@@ -1239,22 +1255,59 @@ function openSubmitModal(asgnId, resubmit = false) {
   if (title) title.textContent = resubmit ? 'Re-entregar Tarea' : 'Entregar Tarea';
   const user     = Session.get();
   const existing = DB.submissions.get(asgnId, user.id);
-  form.querySelector('[name="content"]').value  = existing?.content  || '';
-  form.querySelector('[name="fileName"]').value = existing?.fileName || '';
+  form.querySelector('[name="content"]').value = existing?.content || '';
+
+  // Reset file UI
+  const fileInput    = $('#submit-file-input');
+  const fileInfo     = $('#file-selected-info');
+  const fileName     = $('#file-selected-name');
+  const fileDropText = $('#file-drop-text');
+  if (fileInput) fileInput.value = '';
+  // If resubmitting and previous file exists, show it
+  if (existing?.fileName) {
+    if (fileDropText) fileDropText.textContent = 'Haz clic para reemplazar el archivo';
+    if (fileName) fileName.textContent = `${existing.fileName}${existing.fileSize ? ' (' + formatFileSize(existing.fileSize) + ')' : ''}`;
+    if (fileInfo) fileInfo.hidden = false;
+  } else {
+    if (fileDropText) fileDropText.textContent = 'Haz clic para seleccionar un archivo';
+    if (fileInfo) fileInfo.hidden = true;
+  }
   Modal.open('submit');
 }
 
 function saveSubmit(e) {
   e.preventDefault();
-  const form     = $('#modal-submit-form');
-  const content  = form.querySelector('[name="content"]').value.trim();
-  const fileName = form.querySelector('[name="fileName"]').value.trim();
+  const form    = $('#modal-submit-form');
+  const content = form.querySelector('[name="content"]').value.trim();
   if (!content) { toast('El contenido de la entrega es requerido', 'error'); return; }
-  const user = Session.get();
-  DB.submissions.submit({ assignmentId: _submitAsgnId, studentId: user.id, content, fileName });
-  toast('Tarea entregada exitosamente', 'success');
-  Modal.close();
-  Nav.go('student-assignment-detail', { id: _submitAsgnId });
+
+  const user      = Session.get();
+  const fileInput = $('#submit-file-input');
+  const file      = fileInput?.files?.[0];
+
+  const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+  if (file && file.size > MAX_SIZE) {
+    toast('El archivo supera el límite de 5 MB', 'error');
+    return;
+  }
+
+  function persist(fileName, fileData, fileSize) {
+    DB.submissions.submit({ assignmentId: _submitAsgnId, studentId: user.id, content, fileName, fileData, fileSize });
+    toast('Tarea entregada exitosamente', 'success');
+    Modal.close();
+    Nav.go('student-assignment-detail', { id: _submitAsgnId });
+  }
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = ev => persist(file.name, ev.target.result, file.size);
+    reader.onerror = () => { toast('Error al leer el archivo', 'error'); };
+    reader.readAsDataURL(file);
+  } else {
+    // No new file selected — keep existing attachment if any
+    const existing = DB.submissions.get(_submitAsgnId, user.id);
+    persist(existing?.fileName || null, existing?.fileData || null, existing?.fileSize || null);
+  }
 }
 
 /* ── Join Course Modal ── */
@@ -1374,6 +1427,33 @@ function startApp(user) {
   });
 
   $$('.modal-close').forEach(btn => btn.addEventListener('click', Modal.close));
+
+  // File input handler for submit modal
+  $('#submit-file-input')?.addEventListener('change', function() {
+    const file = this.files?.[0];
+    const fileInfo     = $('#file-selected-info');
+    const fileNameEl   = $('#file-selected-name');
+    const fileDropText = $('#file-drop-text');
+    if (file) {
+      if (fileNameEl) fileNameEl.textContent = `${file.name} (${formatFileSize(file.size)})`;
+      if (fileInfo)   fileInfo.hidden = false;
+      if (fileDropText) fileDropText.textContent = 'Haz clic para reemplazar el archivo';
+    }
+  });
+
+  $('#file-remove-btn')?.addEventListener('click', function() {
+    const fileInput    = $('#submit-file-input');
+    const fileInfo     = $('#file-selected-info');
+    const fileDropText = $('#file-drop-text');
+    if (fileInput) fileInput.value = '';
+    if (fileInfo) fileInfo.hidden = true;
+    if (fileDropText) fileDropText.textContent = 'Haz clic para seleccionar un archivo';
+    // Clear existing attachment from pending resubmit
+    if (_submitAsgnId) {
+      const existing = DB.submissions.get(_submitAsgnId, Session.get()?.id);
+      if (existing) { existing.fileName = null; existing.fileData = null; existing.fileSize = null; DB.submissions.save(existing); }
+    }
+  });
 
   // Hash routing: restore view from URL hash
   const hash = location.hash.replace('#', '');
