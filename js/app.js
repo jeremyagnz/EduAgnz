@@ -14,25 +14,40 @@ const Session = {
 /* ── UI helpers ── */
 function $(sel, ctx = document) { return ctx.querySelector(sel); }
 function $$(sel, ctx = document) { return [...ctx.querySelectorAll(sel)]; }
-
 function show(el) { if (el) el.hidden = false; }
 function hide(el) { if (el) el.hidden = true; }
+
+function renderIcons() {
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+/* ── Toast ── */
+const TOAST_ICONS = {
+  success: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  error:   '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+  info:    '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+};
 
 function toast(msg, type = 'info') {
   const container = $('#toast-container');
   const t = document.createElement('div');
   t.className = `toast ${type}`;
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-  const iconSpan = document.createElement('span');
-  iconSpan.textContent = icons[type] || 'ℹ️';
-  const msgSpan = document.createElement('span');
-  msgSpan.textContent = msg;
-  t.appendChild(iconSpan);
-  t.appendChild(msgSpan);
+
+  const iconDiv = document.createElement('div');
+  iconDiv.className = 'toast-icon';
+  iconDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">${TOAST_ICONS[type] || TOAST_ICONS.info}</svg>`;
+
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'toast-msg';
+  msgDiv.textContent = msg;
+
+  t.appendChild(iconDiv);
+  t.appendChild(msgDiv);
   container.appendChild(t);
-  setTimeout(() => t.remove(), 3500);
+  setTimeout(() => t.remove(), 3800);
 }
 
+/* ── Date helpers ── */
 function formatDate(dateStr) {
   if (!dateStr) return '—';
   const d = new Date(dateStr + 'T00:00:00');
@@ -41,7 +56,9 @@ function formatDate(dateStr) {
 
 function formatDateTime(isoStr) {
   if (!isoStr) return '—';
-  return new Date(isoStr).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return new Date(isoStr).toLocaleDateString('es-ES', {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
 }
 
 function isOverdue(dateStr) {
@@ -57,25 +74,49 @@ function daysLeft(dateStr) {
 function dueBadge(dateStr) {
   if (!dateStr) return '';
   const d = daysLeft(dateStr);
-  if (d < 0)  return `<span class="badge badge-red">⏰ Vencida</span>`;
-  if (d === 0) return `<span class="badge badge-amber">⚡ Vence hoy</span>`;
-  if (d <= 3) return `<span class="badge badge-amber">⏳ ${d}d</span>`;
-  return `<span class="badge badge-blue">📅 ${formatDate(dateStr)}</span>`;
+  if (d < 0)   return `<span class="badge badge-red">Vencida</span>`;
+  if (d === 0) return `<span class="badge badge-amber">Vence hoy</span>`;
+  if (d <= 3)  return `<span class="badge badge-amber">${d}d restantes</span>`;
+  return `<span class="badge badge-gray">${formatDate(dateStr)}</span>`;
 }
 
 function initials(name) {
-  return name.split(' ').slice(0,2).map(p => p[0]).join('').toUpperCase();
+  return name.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
 }
 
 function escHtml(str) {
   return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* ── SVG icon helper ── */
+const ICONS = {
+  home:        '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  book:        '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  clipboard:   '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/>',
+  inbox:       '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+  users:       '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  send:        '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+  edit:        '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+  trash:       '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>',
+  eye:         '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  award:       '<circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>',
+  copy:        '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  chevron:     '<polyline points="9 18 15 12 9 6"/>',
+  plus:        '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  check:       '<polyline points="20 6 9 17 4 12"/>',
+  clock:       '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  alert:       '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>',
+};
+
+function icon(name, size = 16) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ''}</svg>`;
+}
+
 /* ── Modal ── */
 const Modal = {
   currentId: null,
   open(id) {
-    Modal.close(); // close any existing first
+    Modal.close();
     const overlay = $('#modal-overlay');
     const modal   = $(`#modal-${id}`);
     if (!overlay || !modal) return;
@@ -95,15 +136,16 @@ const Nav = {
   currentView: null,
 
   go(viewId, data = {}) {
-    // Hide all views
     $$('.view').forEach(v => v.classList.remove('active'));
-    // Show target
     const view = $(`#view-${viewId}`);
     if (!view) return;
     view.classList.add('active');
     Nav.currentView = viewId;
 
-    // Update sidebar nav highlights
+    // Hash routing
+    history.replaceState({ viewId, data }, '', '#' + viewId);
+
+    // Update sidebar highlights
     $$('.nav-item').forEach(n => {
       n.classList.toggle('active', n.dataset.view === viewId);
     });
@@ -112,15 +154,14 @@ const Nav = {
     const renderer = ViewRenderers[viewId];
     if (renderer) renderer(data);
 
-    // Scroll main content to top
-    const mc = $('#main-content');
-    if (mc) mc.scrollTop = 0;
+    // Scroll to top
+    $('#main-content')?.scrollTo(0, 0);
   },
 };
 
 /* ── Topbar ── */
 function setTopbar(title, subtitle = '') {
-  const el = $('#topbar-title');
+  const el  = $('#topbar-title');
   const sub = $('#topbar-subtitle');
   if (el)  el.textContent = title;
   if (sub) {
@@ -131,12 +172,18 @@ function setTopbar(title, subtitle = '') {
 
 /* ── Sidebar ── */
 function buildSidebar(user) {
-  const sidebarUser = $('#sidebar-user-name');
-  const sidebarRole = $('#sidebar-user-role');
+  const sidebarUser   = $('#sidebar-user-name');
+  const sidebarRole   = $('#sidebar-user-role');
   const sidebarAvatar = $('#sidebar-avatar');
-  if (sidebarUser)   sidebarUser.textContent = user.name;
-  if (sidebarRole)   sidebarRole.textContent = user.role === 'teacher' ? 'Profesor' : 'Estudiante';
-  if (sidebarAvatar) sidebarAvatar.textContent = initials(user.name);
+  const topbarAvatar  = $('#topbar-avatar');
+  const topbarName    = $('#topbar-user-name');
+
+  const initStr = initials(user.name);
+  if (sidebarUser)   sidebarUser.textContent  = user.name;
+  if (sidebarRole)   sidebarRole.textContent  = user.role === 'teacher' ? 'Profesor/a' : 'Estudiante';
+  if (sidebarAvatar) sidebarAvatar.textContent = initStr;
+  if (topbarAvatar)  topbarAvatar.textContent  = initStr;
+  if (topbarName)    topbarName.textContent    = user.name.split(' ')[0];
 
   const nav = $('#sidebar-nav');
   if (!nav) return;
@@ -145,43 +192,39 @@ function buildSidebar(user) {
     nav.innerHTML = `
       <div class="sidebar-section-title">Principal</div>
       <button class="nav-item" data-view="teacher-overview">
-        <span class="nav-icon">🏠</span> Inicio
+        ${icon('home', 18)} Inicio
       </button>
-      <div class="sidebar-section-title">Gestión</div>
+      <div class="sidebar-section-title">Gestión Académica</div>
       <button class="nav-item" data-view="teacher-courses">
-        <span class="nav-icon">📚</span> Mis Cursos
+        ${icon('book', 18)} Mis Cursos
       </button>
       <button class="nav-item" data-view="teacher-assignments">
-        <span class="nav-icon">📋</span> Tareas
+        ${icon('clipboard', 18)} Tareas
       </button>
       <button class="nav-item" data-view="teacher-submissions">
-        <span class="nav-icon">📥</span> Entregas
-      </button>
-    `;
+        ${icon('inbox', 18)} Entregas
+      </button>`;
   } else {
     nav.innerHTML = `
       <div class="sidebar-section-title">Principal</div>
       <button class="nav-item" data-view="student-overview">
-        <span class="nav-icon">🏠</span> Inicio
+        ${icon('home', 18)} Inicio
       </button>
-      <div class="sidebar-section-title">Académico</div>
+      <div class="sidebar-section-title">Mi Actividad</div>
       <button class="nav-item" data-view="student-courses">
-        <span class="nav-icon">📚</span> Mis Cursos
+        ${icon('book', 18)} Mis Cursos
       </button>
       <button class="nav-item" data-view="student-assignments">
-        <span class="nav-icon">📋</span> Tareas
+        ${icon('clipboard', 18)} Tareas
       </button>
       <button class="nav-item" data-view="student-my-submissions">
-        <span class="nav-icon">📤</span> Mis Entregas
-      </button>
-    `;
+        ${icon('send', 18)} Mis Entregas
+      </button>`;
   }
 
-  // Wire nav clicks
   $$('.nav-item', nav).forEach(btn => {
     btn.addEventListener('click', () => {
       Nav.go(btn.dataset.view);
-      // Close mobile sidebar
       $('#sidebar')?.classList.remove('open');
       $('#sidebar-backdrop')?.classList.remove('show');
     });
@@ -195,210 +238,170 @@ const ViewRenderers = {};
 
 /* ── TEACHER OVERVIEW ── */
 ViewRenderers['teacher-overview'] = function() {
-  const user   = Session.get();
+  const user      = Session.get();
+  const firstName = user.name.split(' ')[0];
   const myCourses = DB.courses.byTeacher(user.id);
   const myAsgns   = DB.assignments.byTeacher(user.id);
   const allSubs   = DB.submissions.all().filter(s => myAsgns.some(a => a.id === s.assignmentId));
   const ungraded  = allSubs.filter(s => s.grade === null);
 
-  setTopbar('Inicio', `Bienvenida, ${user.name.split(' ')[0]}`);
+  setTopbar('Inicio');
+
+  // Update page header
+  const phTitle = $('#ph-title-teacher-overview');
+  const phSub   = $('#ph-sub-teacher-overview');
+  if (phTitle) phTitle.textContent = `Bienvenido, ${firstName}`;
+  if (phSub)   phSub.textContent   = `Aquí tienes un resumen de tu actividad`;
 
   $('#teacher-stat-courses').textContent  = myCourses.length;
   $('#teacher-stat-asgns').textContent    = myAsgns.length;
   $('#teacher-stat-subs').textContent     = allSubs.length;
   $('#teacher-stat-ungraded').textContent = ungraded.length;
 
-  // Recent assignments
-  const recent = [...myAsgns].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+  const recent    = [...myAsgns].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 6);
   const container = $('#teacher-recent-asgns');
   if (!container) return;
+
   if (!recent.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><p class="empty-state-text">Aún no has creado tareas.</p></div>`;
+    container.innerHTML = emptyState('clipboard', 'Sin tareas aún', 'Crea tu primer curso y añade tareas para empezar.');
     return;
   }
+
   container.innerHTML = recent.map(a => {
-    const course = DB.courses.byId(a.courseId);
-    const subs   = DB.submissions.byAssignment(a.id);
+    const course  = DB.courses.byId(a.courseId);
+    const subs    = DB.submissions.byAssignment(a.id);
     const enrolled = (course?.studentIds || []).length;
-    return `
-      <div class="assignment-card" style="cursor:pointer" onclick="Nav.go('teacher-assignment-detail', {id:'${a.id}'})">
-        <div class="assignment-icon">📝</div>
-        <div class="assignment-body">
-          <div class="assignment-title">${escHtml(a.title)}</div>
-          <div class="assignment-course">${escHtml(course?.name || '')}</div>
-          <div class="assignment-meta">
-            ${dueBadge(a.dueDate)}
-            <span class="badge badge-gray">🏆 ${a.points} pts</span>
-            <span class="badge badge-${subs.length > 0 ? 'green' : 'gray'}">📥 ${subs.length}/${enrolled} entregas</span>
-          </div>
-        </div>
-        <div class="assignment-actions">
-          <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); Nav.go('teacher-assignment-detail', {id:'${a.id}'})">Ver</button>
-        </div>
-      </div>`;
+    return asgnCard(a, course, subs, enrolled, 'teacher');
   }).join('');
 };
 
 /* ── TEACHER COURSES ── */
 ViewRenderers['teacher-courses'] = function() {
-  const user = Session.get();
-  setTopbar('Mis Cursos', 'Gestiona tus cursos');
+  const user      = Session.get();
   const myCourses = DB.courses.byTeacher(user.id);
-  const grid = $('#teacher-courses-grid');
+  const grid      = $('#teacher-courses-grid');
   if (!grid) return;
+  setTopbar('Mis Cursos');
 
   if (!myCourses.length) {
-    grid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1">
-        <div class="empty-state-icon">📚</div>
-        <div class="empty-state-title">Aún no tienes cursos</div>
-        <div class="empty-state-text">Crea tu primer curso para empezar a gestionar tareas.</div>
-        <button class="btn btn-primary" onclick="openCourseModal()">+ Nuevo Curso</button>
-      </div>`;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">${emptyStateInner('book', 'Sin cursos todavía', 'Crea tu primer curso para comenzar a gestionar tareas y estudiantes.', `<button class="btn btn-primary" onclick="openCourseModal()">Crear primer curso</button>`)}</div>`;
     return;
   }
 
-  grid.innerHTML = myCourses.map(c => {
-    const asgns   = DB.assignments.byCourse(c.id);
-    const enrolled = (c.studentIds || []).length;
-    return `
-      <div class="card" style="cursor:pointer" onclick="Nav.go('teacher-course-detail', {id:'${c.id}'})">
-        <div class="card-color-bar ${c.color || 'color-blue'}"></div>
-        <div class="card-header">
-          <div class="card-title">${escHtml(c.name)}</div>
-          <span class="card-code">${escHtml(c.code)}</span>
-          <div class="card-description">${escHtml(c.description || '')}</div>
-        </div>
-        <div class="card-footer">
-          <span class="badge badge-blue">👨‍🎓 ${enrolled} alumnos</span>
-          <span class="badge badge-gray">📋 ${asgns.length} tareas</span>
-          <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openCourseModal('${c.id}')">✏️</button>
-          <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteCourse('${c.id}')">🗑️</button>
-        </div>
-      </div>`;
-  }).join('');
+  grid.innerHTML = myCourses.map(c => courseCard(c, 'teacher')).join('');
 };
 
 /* ── TEACHER COURSE DETAIL ── */
 ViewRenderers['teacher-course-detail'] = function({ id }) {
   const course = DB.courses.byId(id);
   if (!course) { Nav.go('teacher-courses'); return; }
-  setTopbar(course.name, 'Detalle del curso');
 
-  // Breadcrumb
-  const bc = $('#teacher-course-detail-breadcrumb');
-  if (bc) bc.innerHTML = `
-    <span class="breadcrumb-item" onclick="Nav.go('teacher-courses')">Mis Cursos</span>
-    <span class="breadcrumb-sep">›</span>
-    <span class="breadcrumb-item current">${escHtml(course.name)}</span>`;
+  window._currentCourseDetailId = id;
+  setTopbar(course.name);
 
-  // Header
-  const header = $('#teacher-course-detail-header');
-  if (header) {
-    const teacher = DB.users.byId(course.teacherId);
-    header.innerHTML = `
-      <div class="course-header-card">
-        <div class="course-header-banner ${course.color || 'color-blue'}"></div>
-        <div class="course-header-body">
-          <div class="course-header-info">
-            <div class="course-header-title">${escHtml(course.name)}</div>
-            <div class="course-header-desc">${escHtml(course.description || 'Sin descripción')}</div>
-            <div class="course-header-meta">
-              <span class="badge badge-blue">📋 Código: <strong>${escHtml(course.code)}</strong></span>
-              <span class="badge badge-gray">👨‍🎓 ${(course.studentIds||[]).length} estudiantes</span>
-              <span class="badge badge-gray">📅 Creado ${formatDate(course.createdAt?.slice(0,10))}</span>
-            </div>
-          </div>
-          <div style="display:flex;gap:.5rem;flex-shrink:0">
-            <button class="btn btn-secondary btn-sm" onclick="openCourseModal('${course.id}')">✏️ Editar</button>
-          </div>
-        </div>
-      </div>`;
-  }
+  // Page header
+  const bcEl   = $('#tc-breadcrumb');
+  const titleEl= $('#tc-ph-title');
+  const subEl  = $('#tc-ph-sub');
+  const actEl  = $('#tc-ph-actions');
+
+  if (bcEl) bcEl.innerHTML = `
+    <span class="bc-item" onclick="Nav.go('teacher-courses')">Mis Cursos</span>
+    <span class="bc-sep">${icon('chevron', 12)}</span>
+    <span class="bc-item current">${escHtml(course.name)}</span>`;
+
+  if (titleEl) titleEl.textContent = course.name;
+  if (subEl)   subEl.textContent   = course.description || 'Sin descripción';
+  if (actEl)   actEl.innerHTML = `
+    <button class="btn btn-secondary btn-sm" onclick="openCourseModal('${course.id}')">
+      ${icon('edit', 14)} Editar
+    </button>`;
 
   // Enroll code
   const codeEl = $('#teacher-enroll-code');
   if (codeEl) codeEl.innerHTML = `
     <div class="enroll-code-display">
       <span class="enroll-code-text">${escHtml(course.code)}</span>
-      <button class="btn btn-sm btn-secondary" onclick="copyCode('${escHtml(course.code)}')">📋 Copiar</button>
+      <button class="btn btn-secondary btn-sm" onclick="copyCode('${escHtml(course.code)}')">
+        ${icon('copy', 14)} Copiar código
+      </button>
     </div>
-    <small style="color:var(--text-muted);font-size:.78rem;margin-top:.4rem;display:block">Comparte este código con tus estudiantes para que se unan al curso.</small>`;
+    <p style="color:var(--text-muted);font-size:.78rem;margin-top:.5rem">
+      Comparte este código con tus estudiantes para que se unan al curso.
+    </p>`;
 
-  // Assignments
   renderTeacherCourseAssignments(id);
-
-  // Students
   renderCourseStudents(id);
 };
 
 function renderTeacherCourseAssignments(courseId) {
   const container = $('#teacher-course-assignments-list');
   if (!container) return;
-  const asgns = DB.assignments.byCourse(courseId);
-  if (!asgns.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">📋</div>
-        <div class="empty-state-title">Sin tareas</div>
-        <div class="empty-state-text">Crea la primera tarea para este curso.</div>
-        <button class="btn btn-primary" onclick="openAssignmentModal(null, '${courseId}')">+ Nueva Tarea</button>
-      </div>`;
-    return;
-  }
+  const asgns  = DB.assignments.byCourse(courseId);
   const course = DB.courses.byId(courseId);
   const enrolled = (course?.studentIds || []).length;
+
+  if (!asgns.length) {
+    container.innerHTML = emptyState('clipboard', 'Sin tareas', 'Crea la primera tarea para este curso.', `<button class="btn btn-primary" onclick="openAssignmentModal(null, '${courseId}')">Nueva Tarea</button>`);
+    return;
+  }
+
   container.innerHTML = asgns.map(a => {
     const subs = DB.submissions.byAssignment(a.id);
-    const ungraded = subs.filter(s => s.grade === null).length;
-    return `
-      <div class="assignment-card" style="cursor:pointer" onclick="Nav.go('teacher-assignment-detail', {id:'${a.id}'})">
-        <div class="assignment-icon">📝</div>
-        <div class="assignment-body">
-          <div class="assignment-title">${escHtml(a.title)}</div>
-          <div class="assignment-meta">
-            ${dueBadge(a.dueDate)}
-            <span class="badge badge-gray">🏆 ${a.points} pts</span>
-            <span class="badge badge-${subs.length > 0 ? 'green' : 'gray'}">📥 ${subs.length}/${enrolled}</span>
-            ${ungraded > 0 ? `<span class="badge badge-amber">⏳ ${ungraded} sin calificar</span>` : ''}
-          </div>
-        </div>
-        <div class="assignment-actions">
-          <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); Nav.go('teacher-assignment-detail', {id:'${a.id}'})">Ver entregas</button>
-          <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openAssignmentModal('${a.id}')">✏️ Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteAssignment('${a.id}', '${courseId}')">🗑️</button>
-        </div>
-      </div>`;
+    return asgnCard(a, course, subs, enrolled, 'teacher', courseId);
   }).join('');
 }
 
 function renderCourseStudents(courseId) {
   const container = $('#teacher-course-students-list');
   if (!container) return;
-  const course = DB.courses.byId(courseId);
+  const course    = DB.courses.byId(courseId);
   const studentIds = course?.studentIds || [];
+
   if (!studentIds.length) {
-    container.innerHTML = `<p style="color:var(--text-muted);font-size:.88rem;padding:1rem 0">Aún no hay estudiantes inscritos. Comparte el código del curso.</p>`;
+    container.innerHTML = `<p style="color:var(--text-muted);font-size:.875rem;padding:1rem 0">Aún no hay estudiantes inscritos. Comparte el código del curso para que se unan.</p>`;
     return;
   }
+
   container.innerHTML = `
     <div class="table-wrapper">
       <table class="table">
-        <thead><tr><th>Estudiante</th><th>Email</th><th>Tareas entregadas</th><th></th></tr></thead>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Correo</th>
+            <th>Entregas</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody>
           ${studentIds.map(sid => {
-            const s = DB.users.byId(sid);
+            const s    = DB.users.byId(sid);
             if (!s) return '';
             const asgns = DB.assignments.byCourse(courseId);
-            const subs = asgns.reduce((acc, a) => {
-              const sub = DB.submissions.get(a.id, sid);
-              return acc + (sub ? 1 : 0);
-            }, 0);
+            const subs  = asgns.reduce((acc, a) => acc + (DB.submissions.get(a.id, sid) ? 1 : 0), 0);
+            const pct   = asgns.length ? Math.round((subs / asgns.length) * 100) : 0;
             return `<tr>
-              <td><strong>${escHtml(s.name)}</strong></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:.6rem">
+                  <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#4F46E5,#6366F1);display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:#fff;flex-shrink:0">${initials(s.name)}</div>
+                  <strong>${escHtml(s.name)}</strong>
+                </div>
+              </td>
               <td style="color:var(--text-muted)">${escHtml(s.email)}</td>
-              <td>${subs} / ${asgns.length}</td>
-              <td><button class="btn btn-sm btn-danger" onclick="removeStudent('${courseId}','${sid}')">Eliminar</button></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:.6rem">
+                  <div class="progress-bar-wrap" style="width:80px">
+                    <div class="progress-bar" style="width:${pct}%"></div>
+                  </div>
+                  <span style="font-size:.8rem;color:var(--text-muted)">${subs}/${asgns.length}</span>
+                </div>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-secondary" onclick="removeStudent('${courseId}','${sid}')">
+                  ${icon('trash', 14)} Eliminar
+                </button>
+              </td>
             </tr>`;
           }).join('')}
         </tbody>
@@ -408,20 +411,15 @@ function renderCourseStudents(courseId) {
 
 /* ── TEACHER ALL ASSIGNMENTS ── */
 ViewRenderers['teacher-assignments'] = function() {
-  const user  = Session.get();
-  setTopbar('Tareas', 'Todas tus tareas');
-  const asgns   = DB.assignments.byTeacher(user.id);
+  const user      = Session.get();
+  const asgns     = DB.assignments.byTeacher(user.id);
   const container = $('#teacher-assignments-list');
   if (!container) return;
+  setTopbar('Tareas');
 
   if (!asgns.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">📋</div>
-        <div class="empty-state-title">Aún no has creado tareas</div>
-        <div class="empty-state-text">Ve a un curso y crea tu primera tarea.</div>
-        <button class="btn btn-primary" onclick="Nav.go('teacher-courses')">Ir a Mis Cursos</button>
-      </div>`;
+    container.innerHTML = emptyState('clipboard', 'Sin tareas', 'Ve a un curso y crea tu primera tarea.',
+      `<button class="btn btn-primary" onclick="Nav.go('teacher-courses')">Ir a Mis Cursos</button>`);
     return;
   }
 
@@ -430,60 +428,54 @@ ViewRenderers['teacher-assignments'] = function() {
     const course  = DB.courses.byId(a.courseId);
     const subs    = DB.submissions.byAssignment(a.id);
     const enrolled = (course?.studentIds || []).length;
-    const ungraded = subs.filter(s => s.grade === null).length;
-    return `
-      <div class="assignment-card" style="cursor:pointer" onclick="Nav.go('teacher-assignment-detail', {id:'${a.id}'})">
-        <div class="assignment-icon">📝</div>
-        <div class="assignment-body">
-          <div class="assignment-title">${escHtml(a.title)}</div>
-          <div class="assignment-course">${escHtml(course?.name || 'Curso eliminado')}</div>
-          <div class="assignment-meta">
-            ${dueBadge(a.dueDate)}
-            <span class="badge badge-gray">🏆 ${a.points} pts</span>
-            <span class="badge badge-${subs.length > 0 ? 'green' : 'gray'}">📥 ${subs.length}/${enrolled}</span>
-            ${ungraded > 0 ? `<span class="badge badge-amber">⏳ ${ungraded} sin calificar</span>` : ''}
-          </div>
-        </div>
-        <div class="assignment-actions">
-          <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); Nav.go('teacher-assignment-detail', {id:'${a.id}'})">Ver entregas</button>
-          <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openAssignmentModal('${a.id}')">✏️</button>
-          <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteAssignment('${a.id}')">🗑️</button>
-        </div>
-      </div>`;
+    return asgnCard(a, course, subs, enrolled, 'teacher');
   }).join('');
 };
 
-/* ── TEACHER ASSIGNMENT DETAIL (submissions) ── */
+/* ── TEACHER ASSIGNMENT DETAIL ── */
 ViewRenderers['teacher-assignment-detail'] = function({ id }) {
   const asgn = DB.assignments.byId(id);
   if (!asgn) { Nav.go('teacher-assignments'); return; }
   const course = DB.courses.byId(asgn.courseId);
-  setTopbar(asgn.title, 'Detalle de tarea');
+  setTopbar(asgn.title);
 
-  // Breadcrumb
-  const bc = $('#teacher-asgn-breadcrumb');
-  if (bc) bc.innerHTML = `
-    <span class="breadcrumb-item" onclick="Nav.go('teacher-course-detail', {id:'${asgn.courseId}'})">
+  // Page header
+  const bcEl   = $('#ta-breadcrumb');
+  const titleEl= $('#ta-ph-title');
+  const subEl  = $('#ta-ph-sub');
+  const actEl  = $('#ta-ph-actions');
+
+  if (bcEl) bcEl.innerHTML = `
+    <span class="bc-item" onclick="Nav.go('teacher-course-detail', {id:'${asgn.courseId}'})">
       ${escHtml(course?.name || 'Curso')}
     </span>
-    <span class="breadcrumb-sep">›</span>
-    <span class="breadcrumb-item current">${escHtml(asgn.title)}</span>`;
+    <span class="bc-sep">${icon('chevron', 12)}</span>
+    <span class="bc-item current">${escHtml(asgn.title)}</span>`;
 
-  // Info
+  if (titleEl) titleEl.textContent = asgn.title;
+  if (subEl)   subEl.textContent   = course?.name || '';
+  if (actEl)   actEl.innerHTML = `
+    <button class="btn btn-secondary btn-sm" onclick="openAssignmentModal('${asgn.id}')">
+      ${icon('edit', 14)} Editar
+    </button>
+    <button class="btn btn-danger btn-sm" onclick="deleteAssignment('${asgn.id}')">
+      ${icon('trash', 14)} Eliminar
+    </button>`;
+
+  // Assignment info card
   const info = $('#teacher-asgn-info');
   if (info) info.innerHTML = `
     <div class="detail-card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:.8rem">
-        <div>
-          <div class="detail-title">${escHtml(asgn.title)}</div>
-          <span class="badge badge-blue">${escHtml(course?.name || '')}</span>
+      <div style="display:flex;align-items:flex-start;gap:.8rem">
+        <div style="width:44px;height:44px;border-radius:10px;background:var(--warning-light);color:var(--warning);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          ${icon('clipboard', 20)}
         </div>
-        <div style="display:flex;gap:.5rem">
-          <button class="btn btn-sm btn-secondary" onclick="openAssignmentModal('${asgn.id}')">✏️ Editar</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteAssignment('${asgn.id}')">🗑️ Eliminar</button>
+        <div style="flex:1">
+          <div class="detail-title" style="font-size:1.1rem">${escHtml(asgn.title)}</div>
+          <span class="badge badge-purple">${escHtml(course?.name || '')}</span>
         </div>
       </div>
-      <div class="detail-body" style="margin-top:.8rem">${escHtml(asgn.description || 'Sin descripción')}</div>
+      <div class="detail-body" style="margin-top:1rem">${escHtml(asgn.description || 'Sin descripción.')}</div>
       <div class="detail-meta-row">
         <div class="detail-meta-item">
           <span class="detail-meta-label">Fecha límite</span>
@@ -492,6 +484,10 @@ ViewRenderers['teacher-assignment-detail'] = function({ id }) {
         <div class="detail-meta-item">
           <span class="detail-meta-label">Puntos</span>
           <span class="detail-meta-value">${asgn.points} pts</span>
+        </div>
+        <div class="detail-meta-item">
+          <span class="detail-meta-label">Estado</span>
+          <span class="detail-meta-value">${isOverdue(asgn.dueDate) ? '🔴 Vencida' : '🟢 Activa'}</span>
         </div>
         <div class="detail-meta-item">
           <span class="detail-meta-label">Creada</span>
@@ -503,11 +499,11 @@ ViewRenderers['teacher-assignment-detail'] = function({ id }) {
   // Submissions list
   const container = $('#teacher-asgn-submissions');
   if (!container) return;
-  const subs    = DB.submissions.byAssignment(id);
-  const enrolled = (course?.studentIds || []);
+  const subs     = DB.submissions.byAssignment(id);
+  const enrolled = course?.studentIds || [];
 
   if (!enrolled.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">👨‍🎓</div><div class="empty-state-text">No hay estudiantes inscritos en este curso.</div></div>`;
+    container.innerHTML = emptyState('users', 'Sin estudiantes', 'No hay estudiantes inscritos en este curso.');
     return;
   }
 
@@ -515,53 +511,62 @@ ViewRenderers['teacher-assignment-detail'] = function({ id }) {
     const student = DB.users.byId(sid);
     if (!student) return '';
     const sub = DB.submissions.get(id, sid);
+
     if (!sub) {
       return `
         <div class="submission-box">
           <div class="submission-header">
-            <div>
-              <div class="submission-student">👤 ${escHtml(student.name)}</div>
-              <div class="submission-date">${escHtml(student.email)}</div>
+            <div style="display:flex;align-items:center;gap:.6rem">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4F46E5,#6366F1);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0">${initials(student.name)}</div>
+              <div>
+                <div class="submission-student">${escHtml(student.name)}</div>
+                <div class="submission-date">${escHtml(student.email)}</div>
+              </div>
             </div>
-            <span class="badge badge-gray">⏳ Sin entregar</span>
+            <span class="badge badge-gray">${icon('clock', 12)} Sin entregar</span>
           </div>
         </div>`;
     }
+
     const gradeHtml = sub.grade !== null
-      ? `<div class="grade-display">🏆 ${sub.grade} / ${asgn.points} pts</div>`
+      ? `<div class="grade-display">${icon('award', 14)} ${sub.grade} / ${asgn.points} pts</div>`
       : `<span class="badge badge-amber">Sin calificar</span>`;
+
     return `
       <div class="submission-box">
         <div class="submission-header">
-          <div>
-            <div class="submission-student">👤 ${escHtml(student.name)}</div>
-            <div class="submission-date">Enviado: ${formatDateTime(sub.submittedAt)}</div>
+          <div style="display:flex;align-items:center;gap:.6rem">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#059669,#10B981);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0">${initials(student.name)}</div>
+            <div>
+              <div class="submission-student">${escHtml(student.name)}</div>
+              <div class="submission-date">Enviado: ${formatDateTime(sub.submittedAt)}</div>
+            </div>
           </div>
           <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
             ${gradeHtml}
             <button class="btn btn-sm btn-primary" onclick="openGradeModal('${sub.id}', ${asgn.points})">
-              ${sub.grade !== null ? '✏️ Editar nota' : '📊 Calificar'}
+              ${sub.grade !== null ? icon('edit',14)+' Editar nota' : icon('award',14)+' Calificar'}
             </button>
           </div>
         </div>
         <div class="submission-content">${escHtml(sub.content)}</div>
-        ${sub.fileName ? `<div class="file-attachment">📎 ${escHtml(sub.fileName)}</div>` : ''}
-        ${sub.feedback ? `<div class="feedback-block"><div class="feedback-label">Retroalimentación del profesor</div>${escHtml(sub.feedback)}</div>` : ''}
+        ${sub.fileName ? `<div class="file-attachment">${icon('clipboard',12)} ${escHtml(sub.fileName)}</div>` : ''}
+        ${sub.feedback ? `<div class="feedback-block"><div class="feedback-label">Retroalimentación</div>${escHtml(sub.feedback)}</div>` : ''}
       </div>`;
   }).join('');
 };
 
 /* ── TEACHER ALL SUBMISSIONS ── */
 ViewRenderers['teacher-submissions'] = function() {
-  const user = Session.get();
-  setTopbar('Entregas', 'Todas las entregas recibidas');
+  const user    = Session.get();
   const myAsgns = DB.assignments.byTeacher(user.id);
   const allSubs = DB.submissions.all().filter(s => myAsgns.some(a => a.id === s.assignmentId));
   const container = $('#teacher-all-submissions');
   if (!container) return;
+  setTopbar('Entregas');
 
   if (!allSubs.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📥</div><div class="empty-state-title">Sin entregas</div><div class="empty-state-text">Tus estudiantes aún no han entregado tareas.</div></div>`;
+    container.innerHTML = emptyState('inbox', 'Sin entregas', 'Tus estudiantes aún no han entregado tareas.');
     return;
   }
 
@@ -574,7 +579,7 @@ ViewRenderers['teacher-submissions'] = function() {
             <th>Estudiante</th>
             <th>Tarea</th>
             <th>Curso</th>
-            <th>Entregada</th>
+            <th>Enviada</th>
             <th>Estado</th>
             <th></th>
           </tr>
@@ -585,16 +590,23 @@ ViewRenderers['teacher-submissions'] = function() {
             const asgn    = DB.assignments.byId(sub.assignmentId);
             const course  = asgn ? DB.courses.byId(asgn.courseId) : null;
             return `<tr>
-              <td><strong>${escHtml(student?.name || '?')}</strong></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:.5rem">
+                  <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#4F46E5,#6366F1);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:#fff;flex-shrink:0">${initials(student?.name || '?')}</div>
+                  <strong>${escHtml(student?.name || '?')}</strong>
+                </div>
+              </td>
               <td>${escHtml(asgn?.title || '?')}</td>
-              <td>${escHtml(course?.name || '?')}</td>
-              <td style="color:var(--text-muted)">${formatDateTime(sub.submittedAt)}</td>
+              <td><span class="badge badge-purple">${escHtml(course?.name || '?')}</span></td>
+              <td style="color:var(--text-muted);font-size:.8rem">${formatDateTime(sub.submittedAt)}</td>
               <td>${sub.grade !== null
-                ? `<span class="badge badge-green">✅ ${sub.grade}/${asgn?.points || '?'}</span>`
-                : `<span class="badge badge-amber">⏳ Sin calificar</span>`}
+                ? `<span class="badge badge-green">${icon('check',12)} ${sub.grade}/${asgn?.points}</span>`
+                : `<span class="badge badge-amber">${icon('clock',12)} Pendiente</span>`}
               </td>
               <td>
-                <button class="btn btn-sm btn-outline" onclick="Nav.go('teacher-assignment-detail',{id:'${sub.assignmentId}'})">Ver</button>
+                <button class="btn btn-sm btn-outline" onclick="Nav.go('teacher-assignment-detail',{id:'${sub.assignmentId}'})">
+                  ${icon('eye',14)} Ver
+                </button>
               </td>
             </tr>`;
           }).join('')}
@@ -609,100 +621,60 @@ ViewRenderers['teacher-submissions'] = function() {
 
 /* ── STUDENT OVERVIEW ── */
 ViewRenderers['student-overview'] = function() {
-  const user = Session.get();
-  setTopbar('Inicio', `Bienvenido, ${user.name.split(' ')[0]}`);
-
+  const user      = Session.get();
+  const firstName = user.name.split(' ')[0];
   const myCourses = DB.courses.byStudent(user.id);
   const allAsgns  = myCourses.flatMap(c => DB.assignments.byCourse(c.id));
   const mySubs    = DB.submissions.byStudent(user.id);
-  const pending   = allAsgns.filter(a => {
-    const sub = DB.submissions.get(a.id, user.id);
-    return !sub && !isOverdue(a.dueDate);
-  });
-  const graded = mySubs.filter(s => s.grade !== null);
+  const pending   = allAsgns.filter(a => !DB.submissions.get(a.id, user.id) && !isOverdue(a.dueDate));
+  const graded    = mySubs.filter(s => s.grade !== null);
+
+  setTopbar('Inicio');
+
+  const phTitle = $('#ph-title-student-overview');
+  const phSub   = $('#ph-sub-student-overview');
+  if (phTitle) phTitle.textContent = `¡Hola, ${firstName}!`;
+  if (phSub)   phSub.textContent   = 'Aquí tienes un resumen de tu actividad académica';
 
   $('#student-stat-courses').textContent  = myCourses.length;
   $('#student-stat-pending').textContent  = pending.length;
   $('#student-stat-subs').textContent     = mySubs.length;
   $('#student-stat-graded').textContent   = graded.length;
 
-  // Upcoming assignments
   const container = $('#student-upcoming-asgns');
   if (!container) return;
+
   const upcoming = allAsgns
     .filter(a => !isOverdue(a.dueDate))
     .sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate))
     .slice(0, 6);
 
   if (!upcoming.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎉</div><div class="empty-state-text">¡No tienes tareas pendientes!</div></div>`;
+    container.innerHTML = emptyState('check', '¡Todo al día!', 'No tienes tareas pendientes por el momento.');
     return;
   }
 
   container.innerHTML = upcoming.map(a => {
     const course = DB.courses.byId(a.courseId);
     const sub    = DB.submissions.get(a.id, user.id);
-    const status = sub
-      ? sub.grade !== null
-        ? `<span class="badge badge-green">✅ ${sub.grade}/${a.points}</span>`
-        : `<span class="badge badge-blue">📤 Entregada</span>`
-      : `<span class="badge badge-amber">⏳ Pendiente</span>`;
-    return `
-      <div class="assignment-card ${sub ? 'submitted' : ''}" style="cursor:pointer" onclick="Nav.go('student-assignment-detail', {id:'${a.id}'})">
-        <div class="assignment-icon">📝</div>
-        <div class="assignment-body">
-          <div class="assignment-title">${escHtml(a.title)}</div>
-          <div class="assignment-course">${escHtml(course?.name || '')}</div>
-          <div class="assignment-meta">
-            ${dueBadge(a.dueDate)}
-            <span class="badge badge-gray">🏆 ${a.points} pts</span>
-            ${status}
-          </div>
-        </div>
-      </div>`;
+    return asgnCardStudent(a, course, sub, user.id);
   }).join('');
 };
 
 /* ── STUDENT COURSES ── */
 ViewRenderers['student-courses'] = function() {
-  const user = Session.get();
-  setTopbar('Mis Cursos', 'Cursos en los que estás inscrito');
+  const user      = Session.get();
   const myCourses = DB.courses.byStudent(user.id);
-  const grid = $('#student-courses-grid');
+  const grid      = $('#student-courses-grid');
   if (!grid) return;
+  setTopbar('Mis Cursos');
 
   if (!myCourses.length) {
-    grid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1">
-        <div class="empty-state-icon">📚</div>
-        <div class="empty-state-title">Aún no estás inscrito en ningún curso</div>
-        <div class="empty-state-text">Usa el código de inscripción que te dio tu profesor.</div>
-        <button class="btn btn-primary" onclick="openJoinModal()">🔑 Unirse a un Curso</button>
-      </div>`;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">${emptyStateInner('book', 'Sin cursos inscritos', 'Usa el código que te dio tu profesor para unirte a un curso.', `<button class="btn btn-primary" onclick="openJoinModal()">Unirse a un Curso</button>`)}</div>`;
     return;
   }
 
-  grid.innerHTML = myCourses.map(c => {
-    const asgns   = DB.assignments.byCourse(c.id);
-    const teacher = DB.users.byId(c.teacherId);
-    const pending = asgns.filter(a => {
-      const sub = DB.submissions.get(a.id, user.id);
-      return !sub && !isOverdue(a.dueDate);
-    }).length;
-    return `
-      <div class="card" style="cursor:pointer" onclick="Nav.go('student-course-detail', {id:'${c.id}'})">
-        <div class="card-color-bar ${c.color || 'color-blue'}"></div>
-        <div class="card-header">
-          <div class="card-title">${escHtml(c.name)}</div>
-          <div class="card-description">${escHtml(c.description || '')}</div>
-          <div style="margin-top:.5rem;font-size:.8rem;color:var(--text-muted)">👩‍🏫 ${escHtml(teacher?.name || '')}</div>
-        </div>
-        <div class="card-footer">
-          <span class="badge badge-gray">📋 ${asgns.length} tareas</span>
-          ${pending > 0 ? `<span class="badge badge-amber">⏳ ${pending} pendientes</span>` : '<span class="badge badge-green">✅ Al día</span>'}
-        </div>
-      </div>`;
-  }).join('');
+  grid.innerHTML = myCourses.map(c => courseCard(c, 'student', user.id)).join('');
 };
 
 /* ── STUDENT COURSE DETAIL ── */
@@ -710,29 +682,36 @@ ViewRenderers['student-course-detail'] = function({ id }) {
   const user   = Session.get();
   const course = DB.courses.byId(id);
   if (!course) { Nav.go('student-courses'); return; }
-  setTopbar(course.name, 'Detalle del curso');
+  setTopbar(course.name);
 
-  const bc = $('#student-course-breadcrumb');
-  if (bc) bc.innerHTML = `
-    <span class="breadcrumb-item" onclick="Nav.go('student-courses')">Mis Cursos</span>
-    <span class="breadcrumb-sep">›</span>
-    <span class="breadcrumb-item current">${escHtml(course.name)}</span>`;
+  const bcEl   = $('#sc-breadcrumb');
+  const titleEl= $('#sc-ph-title');
+  const subEl  = $('#sc-ph-sub');
 
+  if (bcEl) bcEl.innerHTML = `
+    <span class="bc-item" onclick="Nav.go('student-courses')">Mis Cursos</span>
+    <span class="bc-sep">${icon('chevron', 12)}</span>
+    <span class="bc-item current">${escHtml(course.name)}</span>`;
+
+  if (titleEl) titleEl.textContent = course.name;
+  if (subEl)   subEl.textContent   = course.description || '';
+
+  // Course info card
   const header = $('#student-course-header');
   if (header) {
     const teacher = DB.users.byId(course.teacherId);
+    const asgns   = DB.assignments.byCourse(id);
+    const pending = asgns.filter(a => !DB.submissions.get(a.id, user.id) && !isOverdue(a.dueDate)).length;
     header.innerHTML = `
-      <div class="course-header-card">
-        <div class="course-header-banner ${course.color || 'color-blue'}"></div>
-        <div class="course-header-body">
-          <div class="course-header-info">
-            <div class="course-header-title">${escHtml(course.name)}</div>
-            <div class="course-header-desc">${escHtml(course.description || '')}</div>
-            <div class="course-header-meta">
-              <span class="badge badge-blue">👩‍🏫 ${escHtml(teacher?.name || '')}</span>
-              <span class="badge badge-gray">👨‍🎓 ${(course.studentIds||[]).length} estudiantes</span>
-            </div>
+      <div class="detail-card" style="margin-bottom:1.25rem">
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div style="flex:1">
+            <div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.3rem">Docente responsable</div>
+            <div style="font-weight:600">${escHtml(teacher?.name || 'Profesor')}</div>
           </div>
+          <span class="badge badge-gray">${icon('users',12)} ${(course.studentIds||[]).length} estudiantes</span>
+          <span class="badge badge-gray">${icon('clipboard',12)} ${asgns.length} tareas</span>
+          ${pending > 0 ? `<span class="badge badge-amber">${icon('clock',12)} ${pending} pendientes</span>` : `<span class="badge badge-green">${icon('check',12)} Al día</span>`}
         </div>
       </div>`;
   }
@@ -740,53 +719,30 @@ ViewRenderers['student-course-detail'] = function({ id }) {
   const container = $('#student-course-asgns');
   if (!container) return;
   const asgns = DB.assignments.byCourse(id);
+
   if (!asgns.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">El profesor aún no ha publicado tareas.</div></div>`;
+    container.innerHTML = emptyState('clipboard', 'Sin tareas', 'El profesor aún no ha publicado tareas en este curso.');
     return;
   }
+
   container.innerHTML = asgns.map(a => {
     const sub = DB.submissions.get(a.id, user.id);
-    const cardClass = sub
-      ? sub.grade !== null ? 'graded' : 'submitted'
-      : isOverdue(a.dueDate) ? 'overdue' : '';
-    const status = sub
-      ? sub.grade !== null
-        ? `<span class="badge badge-green">✅ ${sub.grade}/${a.points} pts</span>`
-        : `<span class="badge badge-blue">📤 Entregada</span>`
-      : isOverdue(a.dueDate)
-        ? `<span class="badge badge-red">❌ Vencida</span>`
-        : `<span class="badge badge-amber">⏳ Pendiente</span>`;
-    return `
-      <div class="assignment-card ${cardClass}" style="cursor:pointer" onclick="Nav.go('student-assignment-detail', {id:'${a.id}'})">
-        <div class="assignment-icon">📝</div>
-        <div class="assignment-body">
-          <div class="assignment-title">${escHtml(a.title)}</div>
-          <div class="assignment-meta">
-            ${dueBadge(a.dueDate)}
-            <span class="badge badge-gray">🏆 ${a.points} pts</span>
-            ${status}
-          </div>
-        </div>
-        <div class="assignment-actions">
-          <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); Nav.go('student-assignment-detail',{id:'${a.id}'})">
-            ${sub ? 'Ver entrega' : 'Entregar'}
-          </button>
-        </div>
-      </div>`;
+    return asgnCardStudent(a, course, sub, user.id, true);
   }).join('');
 };
 
 /* ── STUDENT ALL ASSIGNMENTS ── */
 ViewRenderers['student-assignments'] = function() {
-  const user = Session.get();
-  setTopbar('Tareas', 'Todas tus tareas');
+  const user      = Session.get();
   const myCourses = DB.courses.byStudent(user.id);
   const allAsgns  = myCourses.flatMap(c => DB.assignments.byCourse(c.id));
   const container = $('#student-assignments-list');
   if (!container) return;
+  setTopbar('Tareas');
 
   if (!allAsgns.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">Inscríbete en un curso para ver las tareas.</div></div>`;
+    container.innerHTML = emptyState('clipboard', 'Sin tareas', 'Inscríbete en un curso para ver las tareas.',
+      `<button class="btn btn-primary" onclick="Nav.go('student-courses')">Ver Mis Cursos</button>`);
     return;
   }
 
@@ -794,34 +750,7 @@ ViewRenderers['student-assignments'] = function() {
   container.innerHTML = sorted.map(a => {
     const course = DB.courses.byId(a.courseId);
     const sub    = DB.submissions.get(a.id, user.id);
-    const cardClass = sub
-      ? sub.grade !== null ? 'graded' : 'submitted'
-      : isOverdue(a.dueDate) ? 'overdue' : '';
-    const status = sub
-      ? sub.grade !== null
-        ? `<span class="badge badge-green">✅ Calificada: ${sub.grade}/${a.points}</span>`
-        : `<span class="badge badge-blue">📤 Entregada</span>`
-      : isOverdue(a.dueDate)
-        ? `<span class="badge badge-red">❌ Vencida</span>`
-        : `<span class="badge badge-amber">⏳ Pendiente</span>`;
-    return `
-      <div class="assignment-card ${cardClass}" style="cursor:pointer" onclick="Nav.go('student-assignment-detail', {id:'${a.id}'})">
-        <div class="assignment-icon">📝</div>
-        <div class="assignment-body">
-          <div class="assignment-title">${escHtml(a.title)}</div>
-          <div class="assignment-course">${escHtml(course?.name || '')}</div>
-          <div class="assignment-meta">
-            ${dueBadge(a.dueDate)}
-            <span class="badge badge-gray">🏆 ${a.points} pts</span>
-            ${status}
-          </div>
-        </div>
-        <div class="assignment-actions">
-          <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); Nav.go('student-assignment-detail',{id:'${a.id}'})">
-            ${sub ? 'Ver' : 'Entregar'}
-          </button>
-        </div>
-      </div>`;
+    return asgnCardStudent(a, course, sub, user.id, true);
   }).join('');
 };
 
@@ -832,25 +761,58 @@ ViewRenderers['student-assignment-detail'] = function({ id }) {
   if (!asgn) { Nav.go('student-assignments'); return; }
   const course = DB.courses.byId(asgn.courseId);
   const sub    = DB.submissions.get(id, user.id);
-  setTopbar(asgn.title, 'Detalle de tarea');
+  setTopbar(asgn.title);
 
-  const bc = $('#student-asgn-breadcrumb');
-  if (bc) bc.innerHTML = `
-    <span class="breadcrumb-item" onclick="Nav.go('student-course-detail', {id:'${asgn.courseId}'})">
+  // Page header
+  const bcEl   = $('#sa-breadcrumb');
+  const titleEl= $('#sa-ph-title');
+  const subEl  = $('#sa-ph-sub');
+  const actEl  = $('#sa-ph-actions');
+
+  if (bcEl) bcEl.innerHTML = `
+    <span class="bc-item" onclick="Nav.go('student-course-detail', {id:'${asgn.courseId}'})">
       ${escHtml(course?.name || 'Curso')}
     </span>
-    <span class="breadcrumb-sep">›</span>
-    <span class="breadcrumb-item current">${escHtml(asgn.title)}</span>`;
+    <span class="bc-sep">${icon('chevron', 12)}</span>
+    <span class="bc-item current">${escHtml(asgn.title)}</span>`;
 
+  if (titleEl) titleEl.textContent = asgn.title;
+  if (subEl)   subEl.textContent   = course?.name || '';
+  if (actEl && !sub && !isOverdue(asgn.dueDate)) {
+    actEl.innerHTML = `
+      <button class="btn btn-primary btn-sm" onclick="openSubmitModal('${id}')">
+        ${icon('send', 14)} Entregar Tarea
+      </button>`;
+  }
+
+  // Assignment info card
   const info = $('#student-asgn-info');
   if (info) {
     const overdueAlert = isOverdue(asgn.dueDate) && !sub
-      ? `<div class="alert alert-danger" style="margin-top:1rem">⏰ Esta tarea ya venció. Ya no puedes entregarla.</div>` : '';
+      ? `<div class="alert alert-danger" style="margin-top:1rem">Esta tarea ya venció. Ya no puedes entregarla.</div>` : '';
+    const statusBadge = sub
+      ? sub.grade !== null
+        ? `<span class="badge badge-green">${icon('check',12)} Calificada: ${sub.grade}/${asgn.points}</span>`
+        : `<span class="badge badge-blue">${icon('send',12)} Entregada</span>`
+      : isOverdue(asgn.dueDate)
+        ? `<span class="badge badge-red">${icon('alert',12)} Vencida</span>`
+        : `<span class="badge badge-amber">${icon('clock',12)} Pendiente</span>`;
+
     info.innerHTML = `
       <div class="detail-card">
-        <div class="detail-title">${escHtml(asgn.title)}</div>
-        <span class="badge badge-blue">${escHtml(course?.name || '')}</span>
-        <div class="detail-body" style="margin-top:.8rem">${escHtml(asgn.description || 'Sin descripción')}</div>
+        <div style="display:flex;align-items:flex-start;gap:.8rem">
+          <div style="width:44px;height:44px;border-radius:10px;background:var(--warning-light);color:var(--warning);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            ${icon('clipboard', 20)}
+          </div>
+          <div style="flex:1">
+            <div class="detail-title" style="font-size:1.1rem">${escHtml(asgn.title)}</div>
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.25rem">
+              <span class="badge badge-purple">${escHtml(course?.name || '')}</span>
+              ${statusBadge}
+            </div>
+          </div>
+        </div>
+        <div class="detail-body" style="margin-top:1rem">${escHtml(asgn.description || 'Sin descripción.')}</div>
         <div class="detail-meta-row">
           <div class="detail-meta-item">
             <span class="detail-meta-label">Fecha límite</span>
@@ -859,14 +821,6 @@ ViewRenderers['student-assignment-detail'] = function({ id }) {
           <div class="detail-meta-item">
             <span class="detail-meta-label">Puntos</span>
             <span class="detail-meta-value">${asgn.points} pts</span>
-          </div>
-          <div class="detail-meta-item">
-            <span class="detail-meta-label">Estado</span>
-            <span class="detail-meta-value">${
-              sub
-                ? sub.grade !== null ? `✅ Calificada: ${sub.grade}/${asgn.points}` : '📤 Entregada'
-                : isOverdue(asgn.dueDate) ? '❌ Vencida' : '⏳ Pendiente'
-            }</span>
           </div>
         </div>
         ${overdueAlert}
@@ -878,38 +832,47 @@ ViewRenderers['student-assignment-detail'] = function({ id }) {
   if (!subSection) return;
 
   if (sub) {
-    // Show existing submission
     const gradeHtml = sub.grade !== null
       ? `<div class="alert alert-success" style="margin-top:1rem">
-           <strong>🏆 Calificación: ${sub.grade} / ${asgn.points} puntos</strong>
-           ${sub.feedback ? `<div class="feedback-block" style="margin-top:.5rem"><div class="feedback-label">Retroalimentación</div>${escHtml(sub.feedback)}</div>` : ''}
+           <strong>${icon('award',16)} Calificación: ${sub.grade} / ${asgn.points} puntos</strong>
+           ${sub.feedback ? `<div class="feedback-block" style="margin-top:.75rem"><div class="feedback-label">Retroalimentación del profesor</div>${escHtml(sub.feedback)}</div>` : ''}
          </div>`
-      : `<div class="alert alert-info" style="margin-top:1rem">ℹ️ Tu entrega está siendo revisada por el profesor.</div>`;
+      : `<div class="alert alert-info" style="margin-top:1rem">Tu entrega está siendo revisada por el profesor.</div>`;
 
     subSection.innerHTML = `
       <div class="detail-card">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-          <div class="detail-title" style="font-size:1rem">📤 Mi Entrega</div>
+          <div style="font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem">
+            ${icon('send',16)} Mi Entrega
+          </div>
           <div style="display:flex;gap:.4rem;align-items:center">
-            <span style="font-size:.8rem;color:var(--text-muted)">${formatDateTime(sub.submittedAt)}</span>
-            ${!isOverdue(asgn.dueDate) || sub.grade === null
-              ? `<button class="btn btn-sm btn-outline" onclick="openSubmitModal('${id}', true)">✏️ Re-entregar</button>` : ''}
+            <span style="font-size:.75rem;color:var(--text-muted)">${formatDateTime(sub.submittedAt)}</span>
+            ${sub.grade === null
+              ? `<button class="btn btn-sm btn-outline" onclick="openSubmitModal('${id}', true)">
+                   ${icon('edit',13)} Re-entregar
+                 </button>` : ''}
           </div>
         </div>
         <div class="submission-content">${escHtml(sub.content)}</div>
-        ${sub.fileName ? `<div class="file-attachment">📎 ${escHtml(sub.fileName)}</div>` : ''}
+        ${sub.fileName ? `<div class="file-attachment">${icon('clipboard',12)} ${escHtml(sub.fileName)}</div>` : ''}
         ${gradeHtml}
       </div>`;
   } else if (!isOverdue(asgn.dueDate)) {
     subSection.innerHTML = `
-      <div class="detail-card">
-        <div class="detail-title" style="font-size:1rem;margin-bottom:1rem">📝 Entregar Tarea</div>
-        <button class="btn btn-primary btn-lg" onclick="openSubmitModal('${id}')">📤 Subir Entrega</button>
+      <div class="detail-card" style="text-align:center;padding:2rem">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem">
+          ${icon('send', 24)}
+        </div>
+        <div style="font-weight:700;font-size:1rem;margin-bottom:.35rem">¿Listo para entregar?</div>
+        <div style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.25rem">Escribe tu respuesta y envíala antes de la fecha límite.</div>
+        <button class="btn btn-primary btn-lg" onclick="openSubmitModal('${id}')">
+          ${icon('send',16)} Entregar Tarea
+        </button>
       </div>`;
   } else {
     subSection.innerHTML = `
       <div class="detail-card">
-        <div class="alert alert-danger">⏰ Esta tarea venció sin entrega. No puedes entregarla.</div>
+        <div class="alert alert-danger">Esta tarea venció sin entrega. No puedes entregarla.</div>
       </div>`;
   }
 };
@@ -917,13 +880,13 @@ ViewRenderers['student-assignment-detail'] = function({ id }) {
 /* ── STUDENT MY SUBMISSIONS ── */
 ViewRenderers['student-my-submissions'] = function() {
   const user  = Session.get();
-  setTopbar('Mis Entregas', 'Historial de entregas y calificaciones');
   const subs  = DB.submissions.byStudent(user.id);
   const container = $('#student-my-subs-list');
   if (!container) return;
+  setTopbar('Mis Entregas');
 
   if (!subs.length) {
-    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📤</div><div class="empty-state-title">Sin entregas</div><div class="empty-state-text">Aún no has entregado ninguna tarea.</div></div>`;
+    container.innerHTML = emptyState('send', 'Sin entregas todavía', 'Aún no has entregado ninguna tarea.');
     return;
   }
 
@@ -932,28 +895,165 @@ ViewRenderers['student-my-submissions'] = function() {
     const asgn   = DB.assignments.byId(sub.assignmentId);
     const course = asgn ? DB.courses.byId(asgn.courseId) : null;
     const gradeHtml = sub.grade !== null
-      ? `<span class="badge badge-green">🏆 ${sub.grade} / ${asgn?.points || '?'} pts</span>`
-      : `<span class="badge badge-amber">⏳ Pendiente</span>`;
+      ? `<div class="grade-display">${icon('award',14)} ${sub.grade} / ${asgn?.points || '?'} pts</div>`
+      : `<span class="badge badge-amber">${icon('clock',12)} Pendiente</span>`;
+
     return `
       <div class="submission-box">
         <div class="submission-header">
           <div>
-            <div class="submission-student">📝 ${escHtml(asgn?.title || 'Tarea eliminada')}</div>
+            <div class="submission-student">${escHtml(asgn?.title || 'Tarea eliminada')}</div>
             <div class="submission-date">
-              ${escHtml(course?.name || '')} · Enviada: ${formatDateTime(sub.submittedAt)}
+              ${course ? `<span class="badge badge-purple" style="margin-right:.3rem">${escHtml(course.name)}</span>` : ''}
+              Enviada: ${formatDateTime(sub.submittedAt)}
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
             ${gradeHtml}
-            ${asgn ? `<button class="btn btn-sm btn-outline" onclick="Nav.go('student-assignment-detail',{id:'${asgn.id}'})">Ver</button>` : ''}
+            ${asgn ? `<button class="btn btn-sm btn-outline" onclick="Nav.go('student-assignment-detail',{id:'${asgn.id}'})">${icon('eye',13)} Ver</button>` : ''}
           </div>
         </div>
         <div class="submission-content">${escHtml(sub.content)}</div>
-        ${sub.fileName ? `<div class="file-attachment">📎 ${escHtml(sub.fileName)}</div>` : ''}
+        ${sub.fileName ? `<div class="file-attachment">${icon('clipboard',12)} ${escHtml(sub.fileName)}</div>` : ''}
         ${sub.feedback ? `<div class="feedback-block"><div class="feedback-label">Retroalimentación</div>${escHtml(sub.feedback)}</div>` : ''}
       </div>`;
   }).join('');
 };
+
+/* ============================================================
+   SHARED CARD TEMPLATES
+   ============================================================ */
+
+function courseCard(c, role, userId = null) {
+  const asgns   = DB.assignments.byCourse(c.id);
+  const enrolled = (c.studentIds || []).length;
+
+  if (role === 'teacher') {
+    const subs = asgns.reduce((acc, a) => acc + DB.submissions.byAssignment(a.id).length, 0);
+    return `
+      <div class="card" style="cursor:pointer" onclick="Nav.go('teacher-course-detail', {id:'${c.id}'})">
+        <div class="card-cover ${c.color || 'color-blue'}">
+          <span class="card-cover-code">${escHtml(c.code)}</span>
+        </div>
+        <div class="card-header">
+          <div class="card-title">${escHtml(c.name)}</div>
+          <div class="card-description">${escHtml(c.description || 'Sin descripción')}</div>
+        </div>
+        <div class="card-footer">
+          <span class="badge badge-gray">${icon('users',12)} ${enrolled}</span>
+          <span class="badge badge-gray">${icon('clipboard',12)} ${asgns.length}</span>
+          <span class="badge badge-gray">${icon('inbox',12)} ${subs}</span>
+          <div style="margin-left:auto;display:flex;gap:.3rem">
+            <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openCourseModal('${c.id}')">
+              ${icon('edit',13)}
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteCourse('${c.id}')">
+              ${icon('trash',13)}
+            </button>
+          </div>
+        </div>
+      </div>`;
+  } else {
+    const teacher = DB.users.byId(c.teacherId);
+    const pending = userId ? asgns.filter(a => !DB.submissions.get(a.id, userId) && !isOverdue(a.dueDate)).length : 0;
+    return `
+      <div class="card" style="cursor:pointer" onclick="Nav.go('student-course-detail', {id:'${c.id}'})">
+        <div class="card-cover ${c.color || 'color-blue'}">
+          <span class="card-cover-code">${escHtml(c.code)}</span>
+        </div>
+        <div class="card-header">
+          <div class="card-title">${escHtml(c.name)}</div>
+          <div class="card-description">${escHtml(c.description || 'Sin descripción')}</div>
+          <div style="margin-top:.5rem;font-size:.78rem;color:var(--text-muted)">
+            ${icon('users',12)} ${escHtml(teacher?.name || '')}
+          </div>
+        </div>
+        <div class="card-footer">
+          <span class="badge badge-gray">${icon('clipboard',12)} ${asgns.length} tareas</span>
+          ${pending > 0
+            ? `<span class="badge badge-amber">${icon('clock',12)} ${pending} pendientes</span>`
+            : `<span class="badge badge-green">${icon('check',12)} Al día</span>`}
+        </div>
+      </div>`;
+  }
+}
+
+function asgnCard(a, course, subs, enrolled, role, courseId = null) {
+  const ungraded = subs.filter(s => s.grade === null).length;
+  return `
+    <div class="assignment-card" style="cursor:pointer" onclick="Nav.go('teacher-assignment-detail', {id:'${a.id}'})">
+      <div class="assignment-icon">${icon('clipboard', 18)}</div>
+      <div class="assignment-body">
+        <div class="assignment-title">${escHtml(a.title)}</div>
+        ${course ? `<div class="assignment-course">${escHtml(course.name)}</div>` : ''}
+        <div class="assignment-meta">
+          ${dueBadge(a.dueDate)}
+          <span class="badge badge-gray">${icon('award',12)} ${a.points} pts</span>
+          <span class="badge badge-${subs.length > 0 ? 'green' : 'gray'}">${icon('inbox',12)} ${subs.length}/${enrolled}</span>
+          ${ungraded > 0 ? `<span class="badge badge-amber">${icon('alert',12)} ${ungraded} sin calificar</span>` : ''}
+        </div>
+      </div>
+      <div class="assignment-actions">
+        <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); Nav.go('teacher-assignment-detail', {id:'${a.id}'})">
+          ${icon('eye',13)} Ver
+        </button>
+        <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation(); openAssignmentModal('${a.id}')">
+          ${icon('edit',13)}
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); deleteAssignment('${a.id}', '${courseId || ''}')">
+          ${icon('trash',13)}
+        </button>
+      </div>
+    </div>`;
+}
+
+function asgnCardStudent(a, course, sub, userId, showActions = false) {
+  const cardClass = sub
+    ? sub.grade !== null ? 'graded' : 'submitted'
+    : isOverdue(a.dueDate) ? 'overdue' : '';
+
+  const statusBadge = sub
+    ? sub.grade !== null
+      ? `<span class="badge badge-green">${icon('award',12)} ${sub.grade}/${a.points}</span>`
+      : `<span class="badge badge-blue">${icon('send',12)} Entregada</span>`
+    : isOverdue(a.dueDate)
+      ? `<span class="badge badge-red">${icon('alert',12)} Vencida</span>`
+      : `<span class="badge badge-amber">${icon('clock',12)} Pendiente</span>`;
+
+  return `
+    <div class="assignment-card ${cardClass}" style="cursor:pointer" onclick="Nav.go('student-assignment-detail', {id:'${a.id}'})">
+      <div class="assignment-icon">${icon('clipboard', 18)}</div>
+      <div class="assignment-body">
+        <div class="assignment-title">${escHtml(a.title)}</div>
+        ${course ? `<div class="assignment-course">${escHtml(course.name)}</div>` : ''}
+        <div class="assignment-meta">
+          ${dueBadge(a.dueDate)}
+          <span class="badge badge-gray">${icon('award',12)} ${a.points} pts</span>
+          ${statusBadge}
+        </div>
+      </div>
+      ${showActions ? `
+      <div class="assignment-actions">
+        <button class="btn btn-sm ${sub ? 'btn-outline' : 'btn-primary'}"
+                onclick="event.stopPropagation(); Nav.go('student-assignment-detail',{id:'${a.id}'})">
+          ${sub ? icon('eye',13)+' Ver' : icon('send',13)+' Entregar'}
+        </button>
+      </div>` : ''}
+    </div>`;
+}
+
+/* ── Empty state helpers ── */
+function emptyStateInner(iconName, title, text, actions = '') {
+  return `
+    <div class="empty-state-icon">${icon(iconName, 28)}</div>
+    <div class="empty-state-title">${title}</div>
+    <div class="empty-state-text">${text}</div>
+    ${actions}`;
+}
+
+function emptyState(iconName, title, text, actions = '') {
+  return `<div class="empty-state">${emptyStateInner(iconName, title, text, actions)}</div>`;
+}
 
 /* ============================================================
    MODAL ACTIONS
@@ -992,8 +1092,7 @@ function saveCourse(e) {
     DB.courses.save(c);
     toast('Curso actualizado', 'success');
     Modal.close();
-    Nav.go(Nav.currentView === 'teacher-course-detail' ? 'teacher-course-detail' : 'teacher-courses',
-           _editCourseId ? { id: _editCourseId } : {});
+    Nav.go('teacher-course-detail', { id: _editCourseId });
   } else {
     DB.courses.create({ name, description: desc, teacherId: user.id });
     toast('Curso creado', 'success');
@@ -1006,15 +1105,14 @@ function saveCourse(e) {
 let _editAsgnId = null;
 let _defaultCourseId = null;
 function openAssignmentModal(asgnId = null, courseId = null) {
-  _editAsgnId     = asgnId;
+  _editAsgnId      = asgnId;
   _defaultCourseId = courseId;
   const title  = $('#modal-asgn-title');
   const form   = $('#modal-asgn-form');
   const select = form?.querySelector('[name="courseId"]');
   if (!form || !select) return;
 
-  // Populate course select
-  const user = Session.get();
+  const user      = Session.get();
   const myCourses = DB.courses.byTeacher(user.id);
   select.innerHTML = myCourses.map(c => `<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
 
@@ -1037,12 +1135,12 @@ function openAssignmentModal(asgnId = null, courseId = null) {
 
 function saveAssignment(e) {
   e.preventDefault();
-  const form    = $('#modal-asgn-form');
-  const title   = form.querySelector('[name="title"]').value.trim();
-  const desc    = form.querySelector('[name="description"]').value.trim();
-  const dueDate = form.querySelector('[name="dueDate"]').value;
-  const points  = parseInt(form.querySelector('[name="points"]').value, 10);
-  const courseId= form.querySelector('[name="courseId"]').value;
+  const form     = $('#modal-asgn-form');
+  const title    = form.querySelector('[name="title"]').value.trim();
+  const desc     = form.querySelector('[name="description"]').value.trim();
+  const dueDate  = form.querySelector('[name="dueDate"]').value;
+  const points   = parseInt(form.querySelector('[name="points"]').value, 10);
+  const courseId = form.querySelector('[name="courseId"]').value;
 
   if (!title)   { toast('El título es requerido', 'error'); return; }
   if (!dueDate) { toast('La fecha límite es requerida', 'error'); return; }
@@ -1067,7 +1165,7 @@ function saveAssignment(e) {
 
 /* ── Delete helpers ── */
 function deleteCourse(id) {
-  if (!confirm('¿Eliminar este curso? También se eliminarán sus tareas.')) return;
+  if (!confirm('¿Eliminar este curso? También se eliminarán sus tareas y entregas.')) return;
   DB.assignments.byCourse(id).forEach(a => {
     DB.submissions.byAssignment(a.id).forEach(s => DB.submissions.delete(s.id));
     DB.assignments.delete(a.id);
@@ -1079,8 +1177,8 @@ function deleteCourse(id) {
 
 function deleteAssignment(id, returnCourseId = null) {
   if (!confirm('¿Eliminar esta tarea? También se eliminarán las entregas.')) return;
-  const a = DB.assignments.byId(id);
-  const cid = a?.courseId || returnCourseId;
+  const a   = DB.assignments.byId(id);
+  const cid = a?.courseId || returnCourseId || null;
   DB.submissions.byAssignment(id).forEach(s => DB.submissions.delete(s.id));
   DB.assignments.delete(id);
   toast('Tarea eliminada', 'success');
@@ -1107,7 +1205,7 @@ function openGradeModal(subId, maxPoints) {
   if (form) {
     form.querySelector('[name="grade"]').value    = sub.grade ?? '';
     form.querySelector('[name="feedback"]').value = sub.feedback ?? '';
-    const maxEl = form.querySelector('#grade-max');
+    const maxEl = $('#grade-max');
     if (maxEl) maxEl.textContent = maxPoints;
   }
   Modal.open('grade');
@@ -1123,7 +1221,6 @@ function saveGrade(e) {
   DB.submissions.grade(_gradeSubId, { grade, feedback });
   toast('Calificación guardada', 'success');
   Modal.close();
-  // Refresh current view
   const sub = DB.submissions.byId(_gradeSubId);
   if (sub) Nav.go('teacher-assignment-detail', { id: sub.assignmentId });
 }
@@ -1136,7 +1233,7 @@ function openSubmitModal(asgnId, resubmit = false) {
   const form  = $('#modal-submit-form');
   if (!form) return;
   if (title) title.textContent = resubmit ? 'Re-entregar Tarea' : 'Entregar Tarea';
-  const user = Session.get();
+  const user     = Session.get();
   const existing = DB.submissions.get(asgnId, user.id);
   form.querySelector('[name="content"]').value  = existing?.content  || '';
   form.querySelector('[name="fileName"]').value = existing?.fileName || '';
@@ -1165,15 +1262,15 @@ function openJoinModal() {
 
 function saveJoin(e) {
   e.preventDefault();
-  const form = $('#modal-join-form');
-  const code = form.querySelector('[name="code"]').value.trim().toUpperCase();
+  const form   = $('#modal-join-form');
+  const code   = form.querySelector('[name="code"]').value.trim().toUpperCase();
   if (!code) { toast('Ingresa un código', 'error'); return; }
   const course = DB.courses.byCode(code);
   if (!course) { toast('Código inválido. Verifica con tu profesor.', 'error'); return; }
   const user = Session.get();
   const ok   = DB.courses.enroll(course.id, user.id);
   if (!ok) { toast('Ya estás inscrito en este curso', 'info'); Modal.close(); return; }
-  toast(`Inscrito en "${course.name}" ✅`, 'success');
+  toast(`¡Te uniste a "${course.name}"!`, 'success');
   Modal.close();
   Nav.go('student-courses');
 }
@@ -1182,10 +1279,10 @@ function saveJoin(e) {
 function copyCode(code) {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(code)
-      .then(() => toast('Código copiado', 'success'))
-      .catch(() => toast('No se pudo copiar automáticamente', 'info'));
+      .then(() => toast('Código copiado al portapapeles', 'success'))
+      .catch(() => toast('Código: ' + code, 'info'));
   } else {
-    toast('Copia manual: ' + code, 'info');
+    toast('Código: ' + code, 'info');
   }
 }
 
@@ -1206,7 +1303,7 @@ function handleLogin(e) {
   const pass  = form.querySelector('[name="password"]').value;
   const user  = DB.users.byEmail(email);
   if (!user || !DB.users.verifyPassword(user, pass)) {
-    toast('Email o contraseña incorrectos', 'error');
+    toast('Correo o contraseña incorrectos', 'error');
     return;
   }
   Session.set(user);
@@ -1222,14 +1319,13 @@ function handleRegister(e) {
   const role  = form.querySelector('[name="role"]').value;
 
   if (!name)  { toast('El nombre es requerido', 'error'); return; }
-  if (!email) { toast('El email es requerido', 'error'); return; }
+  if (!email) { toast('El correo es requerido', 'error'); return; }
   if (!pass || pass.length < 6) { toast('La contraseña debe tener al menos 6 caracteres', 'error'); return; }
-  if (!role)  { toast('Selecciona un rol', 'error'); return; }
 
   const user = DB.users.create({ name, email, password: pass, role });
-  if (!user) { toast('Ya existe una cuenta con ese email', 'error'); return; }
+  if (!user) { toast('Ya existe una cuenta con ese correo', 'error'); return; }
   Session.set(user);
-  toast(`¡Bienvenido, ${name}! 🎉`, 'success');
+  toast(`¡Bienvenido, ${name}!`, 'success');
   startApp(user);
 }
 
@@ -1238,7 +1334,6 @@ function handleLogout() {
   location.reload();
 }
 
-/* ── Role selector ── */
 function selectRole(role) {
   $$('.role-option').forEach(o => o.classList.toggle('active', o.dataset.role === role));
   const input = $('#register-form [name="role"]');
@@ -1254,49 +1349,48 @@ function startApp(user) {
   show($('#app-section'));
   buildSidebar(user);
 
-  // Wire sidebar logout
-  const logoutBtn = $('#btn-logout');
-  if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+  $('#btn-logout')?.addEventListener('click', handleLogout);
 
-  // Mobile hamburger
-  const ham = $('#hamburger');
-  const sidebar = $('#sidebar');
+  const ham      = $('#hamburger');
+  const sidebar  = $('#sidebar');
   const backdrop = $('#sidebar-backdrop');
-  if (ham) {
-    ham.addEventListener('click', () => {
-      sidebar?.classList.toggle('open');
-      backdrop?.classList.toggle('show');
-    });
-  }
-  if (backdrop) {
-    backdrop.addEventListener('click', () => {
-      sidebar?.classList.remove('open');
-      backdrop.classList.remove('show');
-    });
-  }
 
-  // Modal close
+  ham?.addEventListener('click', () => {
+    sidebar?.classList.toggle('open');
+    backdrop?.classList.toggle('show');
+  });
+
+  backdrop?.addEventListener('click', () => {
+    sidebar?.classList.remove('open');
+    backdrop.classList.remove('show');
+  });
+
   $('#modal-overlay')?.addEventListener('click', e => {
     if (e.target === e.currentTarget) Modal.close();
   });
+
   $$('.modal-close').forEach(btn => btn.addEventListener('click', Modal.close));
 
-  // Note: modal forms are wired via onsubmit attributes in HTML.
+  // Hash routing: restore view from URL hash
+  const hash = location.hash.replace('#', '');
+  const validViews = user.role === 'teacher'
+    ? ['teacher-overview','teacher-courses','teacher-assignments','teacher-submissions']
+    : ['student-overview','student-courses','student-assignments','student-my-submissions'];
 
-  // Navigate to home view
-  if (user.role === 'teacher') Nav.go('teacher-overview');
-  else Nav.go('student-overview');
+  if (hash && validViews.includes(hash)) {
+    Nav.go(hash);
+  } else {
+    Nav.go(user.role === 'teacher' ? 'teacher-overview' : 'student-overview');
+  }
 }
 
 /* ── Bootstrap ── */
 document.addEventListener('DOMContentLoaded', () => {
   DB.init();
 
-  // Wire auth forms (defined on the page before app starts)
   $('#login-form')?.addEventListener('submit', handleLogin);
   $('#register-form')?.addEventListener('submit', handleRegister);
 
-  // Check session
   const user = Session.get();
   if (user) {
     startApp(user);

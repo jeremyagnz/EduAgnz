@@ -6,96 +6,179 @@
   <title>EduAgnz – Plataforma Educativa</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
 <!-- ============================================================
-     AUTH SECTION
+     AUTH SECTION — SPLIT SCREEN
      ============================================================ -->
 <div id="auth-section" hidden>
 
-  <!-- LOGIN -->
-  <div class="auth-card auth-view" id="auth-login">
-    <div class="auth-logo">
-      <div class="auth-logo-icon">🎓</div>
-      <div class="auth-logo-text">Edu<span>Agnz</span></div>
-    </div>
-    <div class="auth-title">Iniciar sesión</div>
-    <div class="auth-subtitle">Accede a tu plataforma educativa</div>
-
-    <form id="login-form">
-      <div class="form-group">
-        <label for="login-email">Correo electrónico</label>
-        <input id="login-email" class="form-control" type="email" name="email"
-               placeholder="tu@email.com" required autocomplete="email" />
+  <!-- LEFT PANEL: Branding -->
+  <div class="auth-left">
+    <div class="auth-brand-logo">
+      <div class="auth-brand-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+             fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
       </div>
-      <div class="form-group">
-        <label for="login-password">Contraseña</label>
-        <input id="login-password" class="form-control" type="password" name="password"
-               placeholder="••••••••" required autocomplete="current-password" />
-      </div>
-      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.4rem">
-        Iniciar sesión
-      </button>
-    </form>
-
-    <div class="auth-switch">
-      ¿No tienes cuenta? <a href="#" onclick="showAuthView('register'); return false">Regístrate</a>
+      <div class="auth-brand-name">Edu<span>Agnz</span></div>
     </div>
 
-    <div class="auth-demo">
-      <strong>Cuentas de demostración:</strong><br />
-      📖 Profesor: <code>profesor@eduagnz.com</code> / <code>profesor123</code><br />
-      🎓 Estudiante: <code>estudiante@eduagnz.com</code> / <code>estudiante123</code>
+    <div class="auth-tagline">La plataforma para <span>gestionar tu institución</span></div>
+    <div class="auth-desc">
+      Administra cursos, asigna tareas, registra entregas y califica a tus estudiantes,
+      todo desde un solo lugar.
+    </div>
+
+    <div class="auth-features">
+      <div class="auth-feature-item">
+        <div class="auth-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <span>Gestión completa de cursos con códigos de inscripción</span>
+      </div>
+      <div class="auth-feature-item">
+        <div class="auth-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/>
+          </svg>
+        </div>
+        <span>Crea y asigna tareas con fechas límite y puntuaciones</span>
+      </div>
+      <div class="auth-feature-item">
+        <div class="auth-feature-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="6"/>
+            <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+          </svg>
+        </div>
+        <span>Califica entregas y da retroalimentación a estudiantes</span>
+      </div>
+    </div>
+
+    <div class="auth-demo-tag">
+      <div class="auth-stat-chip"><strong>3</strong><span>Cursos demo</span></div>
+      <div class="auth-stat-chip"><strong>4</strong><span>Tareas activas</span></div>
+      <div class="auth-stat-chip"><strong>2</strong><span>Roles disponibles</span></div>
     </div>
   </div>
 
-  <!-- REGISTER -->
-  <div class="auth-card auth-view" id="auth-register" hidden>
-    <div class="auth-logo">
-      <div class="auth-logo-icon">🎓</div>
-      <div class="auth-logo-text">Edu<span>Agnz</span></div>
-    </div>
-    <div class="auth-title">Crear cuenta</div>
-    <div class="auth-subtitle">Únete a la plataforma educativa</div>
+  <!-- RIGHT PANEL: Forms -->
+  <div class="auth-right">
+    <div class="auth-right-inner">
 
-    <form id="register-form">
-      <div class="form-group">
-        <label>Soy…</label>
-        <div class="role-selector no-select">
-          <div class="role-option active" data-role="student" onclick="selectRole('student')">
-            <span class="role-icon">🎓</span>
-            <span class="role-label">Estudiante</span>
+      <!-- LOGIN VIEW -->
+      <div class="auth-view" id="auth-login">
+        <div class="auth-right-logo">
+          <div class="auth-right-logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
           </div>
-          <div class="role-option" data-role="teacher" onclick="selectRole('teacher')">
-            <span class="role-icon">👩‍🏫</span>
-            <span class="role-label">Profesor/a</span>
-          </div>
+          <div class="auth-right-logo-text">Edu<span>Agnz</span></div>
         </div>
-        <input type="hidden" name="role" value="student" />
-      </div>
-      <div class="form-group">
-        <label for="reg-name">Nombre completo</label>
-        <input id="reg-name" class="form-control" type="text" name="name"
-               placeholder="Tu nombre completo" required />
-      </div>
-      <div class="form-group">
-        <label for="reg-email">Correo electrónico</label>
-        <input id="reg-email" class="form-control" type="email" name="email"
-               placeholder="tu@email.com" required autocomplete="email" />
-      </div>
-      <div class="form-group">
-        <label for="reg-password">Contraseña</label>
-        <input id="reg-password" class="form-control" type="password" name="password"
-               placeholder="Mínimo 6 caracteres" required autocomplete="new-password" minlength="6" />
-      </div>
-      <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.4rem">
-        Crear cuenta
-      </button>
-    </form>
 
-    <div class="auth-switch">
-      ¿Ya tienes cuenta? <a href="#" onclick="showAuthView('login'); return false">Inicia sesión</a>
+        <div class="auth-title">Bienvenido de nuevo</div>
+        <div class="auth-subtitle">Inicia sesión en tu plataforma educativa</div>
+
+        <form id="login-form">
+          <div class="form-group">
+            <label for="login-email">Correo electrónico</label>
+            <input id="login-email" class="form-control" type="email" name="email"
+                   placeholder="tu@email.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="login-password">Contraseña</label>
+            <input id="login-password" class="form-control" type="password" name="password"
+                   placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.5rem">
+            Iniciar sesión
+          </button>
+        </form>
+
+        <div class="auth-switch">
+          ¿No tienes cuenta? <a href="#" onclick="showAuthView('register'); return false">Regístrate aquí</a>
+        </div>
+
+        <div class="auth-demo">
+          <strong>Cuentas de demostración:</strong><br />
+          Profesor: <code>profesor@eduagnz.com</code> / <code>profesor123</code><br />
+          Estudiante: <code>estudiante@eduagnz.com</code> / <code>estudiante123</code>
+        </div>
+      </div>
+
+      <!-- REGISTER VIEW -->
+      <div class="auth-view" id="auth-register" hidden>
+        <div class="auth-right-logo">
+          <div class="auth-right-logo-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                 fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div class="auth-right-logo-text">Edu<span>Agnz</span></div>
+        </div>
+
+        <div class="auth-title">Crear cuenta</div>
+        <div class="auth-subtitle">Únete a la plataforma educativa</div>
+
+        <form id="register-form">
+          <div class="form-group">
+            <label>Soy…</label>
+            <div class="role-selector no-select">
+              <div class="role-option active" data-role="student" onclick="selectRole('student')">
+                <span class="role-icon">🎓</span>
+                <span class="role-label">Estudiante</span>
+              </div>
+              <div class="role-option" data-role="teacher" onclick="selectRole('teacher')">
+                <span class="role-icon">👩‍🏫</span>
+                <span class="role-label">Profesor/a</span>
+              </div>
+            </div>
+            <input type="hidden" name="role" value="student" />
+          </div>
+          <div class="form-group">
+            <label for="reg-name">Nombre completo</label>
+            <input id="reg-name" class="form-control" type="text" name="name"
+                   placeholder="Tu nombre completo" required />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Correo electrónico</label>
+            <input id="reg-email" class="form-control" type="email" name="email"
+                   placeholder="tu@email.com" required autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Contraseña</label>
+            <input id="reg-password" class="form-control" type="password" name="password"
+                   placeholder="Mínimo 6 caracteres" required autocomplete="new-password" minlength="6" />
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top:.5rem">
+            Crear cuenta
+          </button>
+        </form>
+
+        <div class="auth-switch">
+          ¿Ya tienes cuenta? <a href="#" onclick="showAuthView('login'); return false">Inicia sesión</a>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -110,9 +193,16 @@
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sidebar-logo">
-      <div class="sidebar-logo-icon">🎓</div>
+      <div class="sidebar-logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+             fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+        </svg>
+      </div>
       <div class="sidebar-logo-text">Edu<span>Agnz</span></div>
     </div>
+
     <div class="sidebar-user">
       <div class="sidebar-avatar" id="sidebar-avatar">U</div>
       <div class="sidebar-user-info">
@@ -120,10 +210,19 @@
         <div class="sidebar-user-role" id="sidebar-user-role">Rol</div>
       </div>
     </div>
+
     <nav class="sidebar-nav" id="sidebar-nav"></nav>
+
     <div class="sidebar-footer">
-      <button id="btn-logout" class="btn btn-secondary btn-block btn-sm">
-        🚪 Cerrar sesión
+      <button id="btn-logout" class="btn btn-ghost btn-block btn-sm"
+              style="color:#94A3B8;justify-content:flex-start;gap:.6rem">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Cerrar sesión
       </button>
     </div>
   </aside>
@@ -134,217 +233,373 @@
 
     <!-- TOP BAR -->
     <header class="topbar">
-      <div>
-        <button class="hamburger" id="hamburger" aria-label="Menú">☰</button>
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Menú">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
         <div id="topbar-title" class="topbar-title">Inicio</div>
-        <div id="topbar-subtitle" class="topbar-subtitle" style="display:none"></div>
       </div>
-      <div class="topbar-actions" id="topbar-actions"></div>
+      <div class="topbar-actions" id="topbar-actions">
+        <div class="topbar-user" id="topbar-user-chip">
+          <div class="topbar-user-avatar" id="topbar-avatar">U</div>
+          <span class="topbar-user-name" id="topbar-user-name"></span>
+        </div>
+      </div>
     </header>
 
     <!-- CONTENT AREA -->
     <main class="content-area">
 
-      <!-- ============================================================
+      <!-- ==================================================
            TEACHER VIEWS
-           ============================================================ -->
+           ================================================== -->
 
       <!-- TEACHER OVERVIEW -->
       <div class="view" id="view-teacher-overview">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon blue">📚</div>
-            <div class="stat-info">
-              <div class="stat-value" id="teacher-stat-courses">0</div>
-              <div class="stat-label">Cursos</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon green">📋</div>
-            <div class="stat-info">
-              <div class="stat-value" id="teacher-stat-asgns">0</div>
-              <div class="stat-label">Tareas</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon amber">📥</div>
-            <div class="stat-info">
-              <div class="stat-value" id="teacher-stat-subs">0</div>
-              <div class="stat-label">Entregas</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon red">⏳</div>
-            <div class="stat-info">
-              <div class="stat-value" id="teacher-stat-ungraded">0</div>
-              <div class="stat-label">Sin calificar</div>
+        <div class="view-ph ph-indigo" id="view-ph-teacher-overview">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title" id="ph-title-teacher-overview">Inicio</div>
+              <div class="ph-sub" id="ph-sub-teacher-overview">Panel de control</div>
             </div>
           </div>
         </div>
-        <div class="section-header">
-          <div class="section-title">Tareas Recientes</div>
-          <button class="btn btn-primary btn-sm" onclick="Nav.go('teacher-courses')">Ver Cursos</button>
+        <div class="view-body">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue" id="si-courses">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="teacher-stat-courses">0</div>
+                <div class="stat-label">Cursos activos</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon amber">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="teacher-stat-asgns">0</div>
+                <div class="stat-label">Tareas creadas</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="teacher-stat-subs">0</div>
+                <div class="stat-label">Entregas recibidas</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon red">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="teacher-stat-ungraded">0</div>
+                <div class="stat-label">Sin calificar</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-header">
+            <div class="section-title">Tareas Recientes</div>
+            <button class="btn btn-secondary btn-sm" onclick="Nav.go('teacher-courses')">Ver Cursos</button>
+          </div>
+          <div id="teacher-recent-asgns"></div>
         </div>
-        <div id="teacher-recent-asgns"></div>
       </div>
 
       <!-- TEACHER COURSES -->
       <div class="view" id="view-teacher-courses">
-        <div class="section-header">
-          <div class="section-title">Mis Cursos</div>
-          <button class="btn btn-primary btn-sm" onclick="openCourseModal()">+ Nuevo Curso</button>
+        <div class="view-ph ph-purple">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title">Mis Cursos</div>
+              <div class="ph-sub">Gestiona todos tus cursos activos</div>
+            </div>
+            <div class="ph-actions">
+              <button class="btn btn-primary btn-sm" onclick="openCourseModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nuevo Curso
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="cards-grid" id="teacher-courses-grid"></div>
+        <div class="view-body">
+          <div class="cards-grid" id="teacher-courses-grid"></div>
+        </div>
       </div>
 
       <!-- TEACHER COURSE DETAIL -->
       <div class="view" id="view-teacher-course-detail">
-        <div id="teacher-course-detail-breadcrumb" class="breadcrumb"></div>
-        <div id="teacher-course-detail-header"></div>
-
-        <!-- Enrollment Code -->
-        <div class="detail-card" style="margin-bottom:1.4rem">
-          <div class="section-title" style="margin-bottom:.8rem">🔑 Código de Inscripción</div>
-          <div id="teacher-enroll-code"></div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-          <button class="tab active" onclick="switchCourseTab('assignments', this)">📋 Tareas</button>
-          <button class="tab" onclick="switchCourseTab('students', this)">👨‍🎓 Estudiantes</button>
-        </div>
-
-        <!-- Assignments tab -->
-        <div id="course-tab-assignments">
-          <div class="section-header">
-            <div class="section-title">Tareas del Curso</div>
-            <button class="btn btn-primary btn-sm" id="btn-new-asgn-course"
-              onclick="openAssignmentModal(null, currentCourseId())">+ Nueva Tarea</button>
+        <div class="view-ph ph-purple" id="view-ph-teacher-course-detail">
+          <div class="ph-breadcrumb" id="tc-breadcrumb"></div>
+          <div class="ph-top">
+            <div>
+              <div class="ph-title" id="tc-ph-title">Curso</div>
+              <div class="ph-sub" id="tc-ph-sub"></div>
+            </div>
+            <div class="ph-actions" id="tc-ph-actions"></div>
           </div>
-          <div id="teacher-course-assignments-list"></div>
         </div>
-
-        <!-- Students tab -->
-        <div id="course-tab-students" hidden>
-          <div class="section-header">
-            <div class="section-title">Estudiantes Inscritos</div>
+        <div class="view-body">
+          <!-- Enrollment Code -->
+          <div class="detail-card" style="margin-bottom:1.25rem">
+            <div class="section-title" style="margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+              Código de Inscripción
+            </div>
+            <div id="teacher-enroll-code"></div>
           </div>
-          <div id="teacher-course-students-list"></div>
+
+          <!-- Tabs -->
+          <div class="tabs">
+            <button class="tab active" onclick="switchCourseTab('assignments', this)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+              Tareas
+            </button>
+            <button class="tab" onclick="switchCourseTab('students', this)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Estudiantes
+            </button>
+          </div>
+
+          <div id="course-tab-assignments">
+            <div class="section-header">
+              <div class="section-title">Tareas del Curso</div>
+              <button class="btn btn-primary btn-sm" id="btn-new-asgn-course"
+                onclick="openAssignmentModal(null, currentCourseId())">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nueva Tarea
+              </button>
+            </div>
+            <div id="teacher-course-assignments-list"></div>
+          </div>
+
+          <div id="course-tab-students" hidden>
+            <div class="section-header">
+              <div class="section-title">Estudiantes Inscritos</div>
+            </div>
+            <div id="teacher-course-students-list"></div>
+          </div>
         </div>
       </div>
 
       <!-- TEACHER ALL ASSIGNMENTS -->
       <div class="view" id="view-teacher-assignments">
-        <div class="section-header">
-          <div class="section-title">Todas las Tareas</div>
+        <div class="view-ph ph-amber">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title">Tareas</div>
+              <div class="ph-sub">Todas las tareas de tus cursos</div>
+            </div>
+            <div class="ph-actions">
+              <button class="btn btn-primary btn-sm" onclick="openAssignmentModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nueva Tarea
+              </button>
+            </div>
+          </div>
         </div>
-        <div id="teacher-assignments-list"></div>
+        <div class="view-body">
+          <div id="teacher-assignments-list"></div>
+        </div>
       </div>
 
       <!-- TEACHER ASSIGNMENT DETAIL -->
       <div class="view" id="view-teacher-assignment-detail">
-        <div id="teacher-asgn-breadcrumb" class="breadcrumb"></div>
-        <div id="teacher-asgn-info"></div>
-        <div class="section-header" style="margin-top:1rem">
-          <div class="section-title">📥 Entregas de Estudiantes</div>
+        <div class="view-ph ph-amber" id="view-ph-teacher-asgn">
+          <div class="ph-breadcrumb" id="ta-breadcrumb"></div>
+          <div class="ph-top">
+            <div>
+              <div class="ph-title" id="ta-ph-title">Tarea</div>
+              <div class="ph-sub" id="ta-ph-sub"></div>
+            </div>
+            <div class="ph-actions" id="ta-ph-actions"></div>
+          </div>
         </div>
-        <div id="teacher-asgn-submissions"></div>
+        <div class="view-body">
+          <div id="teacher-asgn-info"></div>
+          <div class="section-header">
+            <div class="section-title">Entregas de Estudiantes</div>
+          </div>
+          <div id="teacher-asgn-submissions"></div>
+        </div>
       </div>
 
       <!-- TEACHER ALL SUBMISSIONS -->
       <div class="view" id="view-teacher-submissions">
-        <div class="section-header">
-          <div class="section-title">Todas las Entregas</div>
+        <div class="view-ph ph-teal">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title">Entregas</div>
+              <div class="ph-sub">Historial completo de entregas de estudiantes</div>
+            </div>
+          </div>
         </div>
-        <div id="teacher-all-submissions"></div>
+        <div class="view-body">
+          <div id="teacher-all-submissions"></div>
+        </div>
       </div>
 
 
-      <!-- ============================================================
+      <!-- ==================================================
            STUDENT VIEWS
-           ============================================================ -->
+           ================================================== -->
 
       <!-- STUDENT OVERVIEW -->
       <div class="view" id="view-student-overview">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-icon blue">📚</div>
-            <div class="stat-info">
-              <div class="stat-value" id="student-stat-courses">0</div>
-              <div class="stat-label">Cursos</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon amber">⏳</div>
-            <div class="stat-info">
-              <div class="stat-value" id="student-stat-pending">0</div>
-              <div class="stat-label">Pendientes</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon green">📤</div>
-            <div class="stat-info">
-              <div class="stat-value" id="student-stat-subs">0</div>
-              <div class="stat-label">Entregas</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon blue">🏆</div>
-            <div class="stat-info">
-              <div class="stat-value" id="student-stat-graded">0</div>
-              <div class="stat-label">Calificadas</div>
+        <div class="view-ph ph-indigo" id="view-ph-student-overview">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title" id="ph-title-student-overview">Inicio</div>
+              <div class="ph-sub" id="ph-sub-student-overview">Tu resumen académico</div>
             </div>
           </div>
         </div>
-        <div class="section-header">
-          <div class="section-title">Próximas Tareas</div>
-          <button class="btn btn-primary btn-sm" onclick="Nav.go('student-assignments')">Ver todas</button>
+        <div class="view-body">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="student-stat-courses">0</div>
+                <div class="stat-label">Cursos inscritos</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon amber">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="student-stat-pending">0</div>
+                <div class="stat-label">Tareas pendientes</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="student-stat-subs">0</div>
+                <div class="stat-label">Tareas entregadas</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+              </div>
+              <div class="stat-info">
+                <div class="stat-value" id="student-stat-graded">0</div>
+                <div class="stat-label">Calificadas</div>
+              </div>
+            </div>
+          </div>
+          <div class="section-header">
+            <div class="section-title">Próximas Tareas</div>
+            <button class="btn btn-secondary btn-sm" onclick="Nav.go('student-assignments')">Ver todas</button>
+          </div>
+          <div id="student-upcoming-asgns"></div>
         </div>
-        <div id="student-upcoming-asgns"></div>
       </div>
 
       <!-- STUDENT COURSES -->
       <div class="view" id="view-student-courses">
-        <div class="section-header">
-          <div class="section-title">Mis Cursos</div>
-          <button class="btn btn-primary btn-sm" onclick="openJoinModal()">🔑 Unirse a Curso</button>
+        <div class="view-ph ph-purple">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title">Mis Cursos</div>
+              <div class="ph-sub">Cursos en los que estás inscrito</div>
+            </div>
+            <div class="ph-actions">
+              <button class="btn btn-primary btn-sm" onclick="openJoinModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+                Unirse a un Curso
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="cards-grid" id="student-courses-grid"></div>
+        <div class="view-body">
+          <div class="cards-grid" id="student-courses-grid"></div>
+        </div>
       </div>
 
       <!-- STUDENT COURSE DETAIL -->
       <div class="view" id="view-student-course-detail">
-        <div id="student-course-breadcrumb" class="breadcrumb"></div>
-        <div id="student-course-header"></div>
-        <div class="section-title" style="margin-bottom:.8rem">📋 Tareas</div>
-        <div id="student-course-asgns"></div>
+        <div class="view-ph ph-purple" id="view-ph-student-course">
+          <div class="ph-breadcrumb" id="sc-breadcrumb"></div>
+          <div class="ph-top">
+            <div>
+              <div class="ph-title" id="sc-ph-title">Curso</div>
+              <div class="ph-sub" id="sc-ph-sub"></div>
+            </div>
+          </div>
+        </div>
+        <div class="view-body">
+          <div id="student-course-header"></div>
+          <div class="section-title" style="margin-bottom:.875rem">Tareas del Curso</div>
+          <div id="student-course-asgns"></div>
+        </div>
       </div>
 
       <!-- STUDENT ALL ASSIGNMENTS -->
       <div class="view" id="view-student-assignments">
-        <div class="section-header">
-          <div class="section-title">Mis Tareas</div>
+        <div class="view-ph ph-amber">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title">Mis Tareas</div>
+              <div class="ph-sub">Todas tus tareas ordenadas por fecha límite</div>
+            </div>
+          </div>
         </div>
-        <div id="student-assignments-list"></div>
+        <div class="view-body">
+          <div id="student-assignments-list"></div>
+        </div>
       </div>
 
       <!-- STUDENT ASSIGNMENT DETAIL -->
       <div class="view" id="view-student-assignment-detail">
-        <div id="student-asgn-breadcrumb" class="breadcrumb"></div>
-        <div id="student-asgn-info"></div>
-        <div id="student-submission-section"></div>
+        <div class="view-ph ph-amber" id="view-ph-student-asgn">
+          <div class="ph-breadcrumb" id="sa-breadcrumb"></div>
+          <div class="ph-top">
+            <div>
+              <div class="ph-title" id="sa-ph-title">Tarea</div>
+              <div class="ph-sub" id="sa-ph-sub"></div>
+            </div>
+            <div class="ph-actions" id="sa-ph-actions"></div>
+          </div>
+        </div>
+        <div class="view-body">
+          <div id="student-asgn-info"></div>
+          <div id="student-submission-section"></div>
+        </div>
       </div>
 
       <!-- STUDENT MY SUBMISSIONS -->
       <div class="view" id="view-student-my-submissions">
-        <div class="section-header">
-          <div class="section-title">Mis Entregas</div>
+        <div class="view-ph ph-teal">
+          <div class="ph-top">
+            <div>
+              <div class="ph-title">Mis Entregas</div>
+              <div class="ph-sub">Historial de entregas y calificaciones recibidas</div>
+            </div>
+          </div>
         </div>
-        <div id="student-my-subs-list"></div>
+        <div class="view-body">
+          <div id="student-my-subs-list"></div>
+        </div>
       </div>
 
-    </main><!-- /.content-area -->
-  </div><!-- /#main-content -->
+    </main>
+  </div>
 </div><!-- /#app-section -->
 
 
@@ -357,7 +612,9 @@
   <div class="modal" id="modal-course">
     <div class="modal-header">
       <div class="modal-title" id="modal-course-title">Nuevo Curso</div>
-      <button class="modal-close" aria-label="Cerrar">✕</button>
+      <button class="modal-close" aria-label="Cerrar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <form id="modal-course-form" onsubmit="saveCourse(event)">
       <div class="modal-body">
@@ -367,12 +624,12 @@
         </div>
         <div class="form-group">
           <label>Descripción</label>
-          <textarea class="form-control" name="description" placeholder="Descripción del curso…"></textarea>
+          <textarea class="form-control" name="description" rows="3" placeholder="Descripción del curso…"></textarea>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="submit" class="btn btn-primary">Guardar Curso</button>
       </div>
     </form>
   </div>
@@ -381,7 +638,9 @@
   <div class="modal" id="modal-assignment">
     <div class="modal-header">
       <div class="modal-title" id="modal-asgn-title">Nueva Tarea</div>
-      <button class="modal-close" aria-label="Cerrar">✕</button>
+      <button class="modal-close" aria-label="Cerrar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <form id="modal-asgn-form" onsubmit="saveAssignment(event)">
       <div class="modal-body">
@@ -394,7 +653,7 @@
           <input class="form-control" name="title" placeholder="Ej: Taller de Derivadas" required />
         </div>
         <div class="form-group">
-          <label>Descripción / Instrucciones</label>
+          <label>Instrucciones</label>
           <textarea class="form-control" name="description" rows="4"
             placeholder="Describe las instrucciones de la tarea…"></textarea>
         </div>
@@ -420,17 +679,19 @@
   <!-- GRADE MODAL -->
   <div class="modal" id="modal-grade">
     <div class="modal-header">
-      <div class="modal-title">📊 Calificar Entrega</div>
-      <button class="modal-close" aria-label="Cerrar">✕</button>
+      <div class="modal-title">Calificar Entrega</div>
+      <button class="modal-close" aria-label="Cerrar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <form id="modal-grade-form" onsubmit="saveGrade(event)">
       <div class="modal-body">
         <div class="form-group">
-          <label>Calificación * <small>(máx. <span id="grade-max">100</span> pts)</small></label>
+          <label>Calificación * <small style="font-weight:400;color:var(--text-muted)">(máx. <span id="grade-max">100</span> pts)</small></label>
           <input class="form-control" type="number" name="grade" min="0" placeholder="0" required />
         </div>
         <div class="form-group">
-          <label>Retroalimentación</label>
+          <label>Retroalimentación <small style="font-weight:400;color:var(--text-muted)">(opcional)</small></label>
           <textarea class="form-control" name="feedback" rows="3"
             placeholder="Comentarios para el estudiante…"></textarea>
         </div>
@@ -445,13 +706,15 @@
   <!-- SUBMIT MODAL -->
   <div class="modal" id="modal-submit">
     <div class="modal-header">
-      <div class="modal-title" id="modal-submit-title">📤 Entregar Tarea</div>
-      <button class="modal-close" aria-label="Cerrar">✕</button>
+      <div class="modal-title" id="modal-submit-title">Entregar Tarea</div>
+      <button class="modal-close" aria-label="Cerrar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <form id="modal-submit-form" onsubmit="saveSubmit(event)">
       <div class="modal-body">
         <div class="alert alert-info" style="margin-bottom:1rem">
-          ℹ️ Escribe tu respuesta en el campo de texto. Puedes indicar el nombre del archivo que entregarías.
+          Escribe tu respuesta a continuación. Puedes indicar el nombre del archivo que entregarías.
         </div>
         <div class="form-group">
           <label>Respuesta / Desarrollo *</label>
@@ -459,13 +722,13 @@
             placeholder="Escribe tu respuesta, procedimiento o comentarios aquí…" required></textarea>
         </div>
         <div class="form-group">
-          <label>Nombre del archivo adjunto <small>(opcional)</small></label>
+          <label>Nombre del archivo adjunto <small style="font-weight:400;color:var(--text-muted)">(opcional)</small></label>
           <input class="form-control" name="fileName" placeholder="Ej: tarea_derivadas.pdf" />
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
-        <button type="submit" class="btn btn-primary">📤 Enviar Entrega</button>
+        <button type="submit" class="btn btn-primary">Enviar Entrega</button>
       </div>
     </form>
   </div>
@@ -473,13 +736,15 @@
   <!-- JOIN COURSE MODAL -->
   <div class="modal" id="modal-join">
     <div class="modal-header">
-      <div class="modal-title">🔑 Unirse a un Curso</div>
-      <button class="modal-close" aria-label="Cerrar">✕</button>
+      <div class="modal-title">Unirse a un Curso</div>
+      <button class="modal-close" aria-label="Cerrar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <form id="modal-join-form" onsubmit="saveJoin(event)">
       <div class="modal-body">
-        <p style="font-size:.9rem;color:var(--text-muted);margin-bottom:1.2rem">
-          Ingresa el código de inscripción que te proporcionó tu profesor.
+        <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.25rem;line-height:1.6">
+          Ingresa el código de inscripción que te proporcionó tu profesor para unirte al curso.
         </p>
         <div class="form-group">
           <label>Código del curso *</label>
@@ -490,7 +755,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary modal-close">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Unirse</button>
+        <button type="submit" class="btn btn-primary">Unirse al Curso</button>
       </div>
     </form>
   </div>
@@ -513,29 +778,16 @@
     const aDiv = document.getElementById('course-tab-assignments');
     const sDiv = document.getElementById('course-tab-students');
     if (tab === 'assignments') {
-      aDiv.hidden = false;
-      sDiv.hidden = true;
+      aDiv.hidden = false; sDiv.hidden = true;
     } else {
-      aDiv.hidden = true;
-      sDiv.hidden = false;
+      aDiv.hidden = true;  sDiv.hidden = false;
     }
   }
 
-  /* ── Helper to get current course ID from breadcrumb ── */
+  /* ── Helper: get current course ID ── */
   function currentCourseId() {
-    const bc = document.querySelector('#teacher-course-detail-breadcrumb .breadcrumb-item[onclick]');
-    if (!bc) return null;
-    const match = bc.getAttribute('onclick')?.match(/'([^']+)'\s*\}/);
-    // We store _currentCourseDetailId in the renderer
     return window._currentCourseDetailId || null;
   }
-
-  /* Patch ViewRenderers to save course id */
-  const _origCourseDetail = ViewRenderers['teacher-course-detail'];
-  ViewRenderers['teacher-course-detail'] = function(data) {
-    window._currentCourseDetailId = data.id;
-    _origCourseDetail(data);
-  };
 </script>
 </body>
 </html>
