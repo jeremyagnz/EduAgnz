@@ -21,9 +21,14 @@ function hide(el) { if (el) el.hidden = true; }
 function toast(msg, type = 'info') {
   const container = $('#toast-container');
   const t = document.createElement('div');
-  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
   t.className = `toast ${type}`;
-  t.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${msg}</span>`;
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  const iconSpan = document.createElement('span');
+  iconSpan.textContent = icons[type] || 'ℹ️';
+  const msgSpan = document.createElement('span');
+  msgSpan.textContent = msg;
+  t.appendChild(iconSpan);
+  t.appendChild(msgSpan);
   container.appendChild(t);
   setTimeout(() => t.remove(), 3500);
 }
@@ -1175,7 +1180,13 @@ function saveJoin(e) {
 
 /* ── Copy code ── */
 function copyCode(code) {
-  navigator.clipboard.writeText(code).then(() => toast('Código copiado', 'success'));
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code)
+      .then(() => toast('Código copiado', 'success'))
+      .catch(() => toast('No se pudo copiar automáticamente', 'info'));
+  } else {
+    toast('Copia manual: ' + code, 'info');
+  }
 }
 
 /* ============================================================
@@ -1194,7 +1205,7 @@ function handleLogin(e) {
   const email = form.querySelector('[name="email"]').value.trim();
   const pass  = form.querySelector('[name="password"]').value;
   const user  = DB.users.byEmail(email);
-  if (!user || user.password !== pass) {
+  if (!user || !DB.users.verifyPassword(user, pass)) {
     toast('Email o contraseña incorrectos', 'error');
     return;
   }

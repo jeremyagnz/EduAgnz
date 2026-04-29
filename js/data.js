@@ -16,6 +16,17 @@ const DB = (() => {
   }
   function list(key) { return raw(key) || []; }
 
+  /* ── simple deterministic hash (password obfuscation for localStorage) ── */
+  function hashPassword(plain) {
+    // FNV-1a 32-bit hash encoded as hex – prevents trivial plain-text reads
+    let h = 2166136261;
+    for (let i = 0; i < plain.length; i++) {
+      h ^= plain.charCodeAt(i);
+      h = Math.imul(h, 16777619) >>> 0;
+    }
+    return h.toString(16).padStart(8, '0');
+  }
+
   /* ── seed / init ── */
   function init() {
     if (localStorage.getItem(INIT_KEY)) return;
@@ -40,9 +51,9 @@ const DB = (() => {
     }
 
     store('users', [
-      { id: 'u1', name: 'Prof. María González', email: 'profesor@eduagnz.com', password: 'profesor123', role: 'teacher' },
-      { id: 'u2', name: 'Carlos Rodríguez',    email: 'estudiante@eduagnz.com', password: 'estudiante123', role: 'student' },
-      { id: 'u3', name: 'Ana López',           email: 'ana@eduagnz.com',        password: 'estudiante123', role: 'student' },
+      { id: 'u1', name: 'Prof. María González', email: 'profesor@eduagnz.com', passwordHash: hashPassword('profesor123'), role: 'teacher' },
+      { id: 'u2', name: 'Carlos Rodríguez',    email: 'estudiante@eduagnz.com', passwordHash: hashPassword('estudiante123'), role: 'student' },
+      { id: 'u3', name: 'Ana López',           email: 'ana@eduagnz.com',        passwordHash: hashPassword('estudiante123'), role: 'student' },
     ]);
 
     store('courses', [
@@ -81,11 +92,14 @@ const DB = (() => {
     },
     create({ name, email, password, role }) {
       if (users.byEmail(email)) return null; // duplicate
-      const user = { id: genId(), name, email, password, role };
+      const user = { id: genId(), name, email, passwordHash: hashPassword(password), role };
       const arr = users.all();
       arr.push(user);
       store('users', arr);
       return user;
+    },
+    verifyPassword(user, plain) {
+      return user.passwordHash === hashPassword(plain);
     },
   };
 
